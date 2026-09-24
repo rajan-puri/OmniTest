@@ -1,0 +1,28 @@
+{
+  "name": "@omnitest/cli",
+  "version": "0.1.0",
+  "description": "Developer command-line interface for the OmniTest unified testing platform",
+  "bin": {
+    "omnitest": "./bin/omnitest.js"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "start": "node ./dist/index.js"
+  },
+  "keywords": [
+    "omnitest",
+    "testing",
+    "cli",
+    "playwright",
+    "axe-core",
+    "accessibility",
+    "performance",
+    "seo",
+    "visual-regression"
+  ],
+  "author": "OmniTest Team",
+  "license": "UNLICENSED"
+}

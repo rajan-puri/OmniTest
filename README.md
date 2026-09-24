@@ -6,7 +6,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Milestone-Phase%206C%20Complete-emerald?style=flat-square" alt="Milestone: Phase 6C Complete" />
+  <img src="https://img.shields.io/badge/Milestone-Phase%207A%20Complete-emerald?style=flat-square" alt="Milestone: Phase 7A Complete" />
   <img src="https://img.shields.io/badge/TypeScript-5.6-blue?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript 5.6" />
   <img src="https://img.shields.io/badge/Next.js-14.2%20(App%20Router)-black?style=flat-square&logo=next.js&logoColor=white" alt="Next.js 14" />
   <img src="https://img.shields.io/badge/Playwright-1.47+-2EAD33?style=flat-square&logo=playwright&logoColor=white" alt="Playwright" />
@@ -310,6 +310,12 @@ Open [http://localhost:3000](http://localhost:3000) to access the landing page a
 Every phase in OmniTest is accompanied by an automated, self-contained verification suite. You can execute these scripts at any time to verify system integrity:
 
 ```bash
+# Verify Phase 7A: Developer CLI
+npx tsx --tsconfig apps/web/tsconfig.json scripts/verify-phase7a.ts
+
+# Verify Phase 6D: Test History & Trends
+npx tsx scripts/verify-phase6d.ts
+
 # Verify Phase 6C: Visual Regression Testing
 npx tsx scripts/verify-phase6c.ts
 
@@ -341,16 +347,17 @@ npx tsx scripts/verify-phase5c.ts && \
 npx tsx scripts/verify-phase5d.ts && \
 npx tsx scripts/verify-phase6a.ts && \
 npx tsx scripts/verify-phase6b.ts && \
-npx tsx scripts/verify-phase6c.ts
+npx tsx scripts/verify-phase6c.ts && \
+npx tsx scripts/verify-phase6d.ts && \
+npx tsx --tsconfig apps/web/tsconfig.json scripts/verify-phase7a.ts
 ```
 
 ### Static Analysis & Production Build
 
 ```bash
-cd apps/web
-npm run typecheck  # npx tsc --noEmit
+npm run typecheck  # tsc --noEmit across all workspaces
 npm run lint       # next lint
-npm run build      # next build
+npm run build      # tsc CLI build + next build
 ```
 
 ---

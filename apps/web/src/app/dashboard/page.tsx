@@ -8,17 +8,58 @@ import {
   PlayCircle,
   FileCode2,
   ArrowRight,
-  Building2,
-  CheckCircle2,
-  Clock,
+  GitBranch,
+  ExternalLink,
+  Activity,
+  Layers,
 } from "lucide-react";
+import { MetricCard } from "@/components/ui/MetricCard";
+import { StatusBadge } from "@/components/ui/StatusBadge";
+import { EngineBadge } from "@/components/ui/EngineBadge";
 
 export default async function DashboardOverviewPage() {
   const user = await getAuthenticatedUser();
   if (!user || !user.activeOrg) return null;
 
+  const orgId = user.activeOrg.id;
+
+  // Telemetry Aggregations
+  const [totalProjects, totalSuites, totalTests, totalRuns, passedRuns, failedRuns] = await Promise.all([
+    db.project.count({ where: { organizationId: orgId } }),
+    db.testSuite.count({ where: { project: { organizationId: orgId } } }),
+    db.test.count({ where: { suite: { project: { organizationId: orgId } } } }),
+    db.testRun.count({ where: { project: { organizationId: orgId } } }),
+    db.testRun.count({ where: { project: { organizationId: orgId }, status: "PASSED" } }),
+    db.testRun.count({ where: { project: { organizationId: orgId }, status: "FAILED" } }),
+  ]);
+
+  const passRate = totalRuns > 0 ? Math.round((passedRuns / totalRuns) * 100) : 0;
+
+  // Recent Executions
+  const recentRuns = await db.testRun.findMany({
+    where: { project: { organizationId: orgId } },
+    include: {
+      project: { select: { id: true, name: true, slug: true } },
+      suite: { select: { id: true, name: true } },
+      testResults: {
+        take: 1,
+        select: {
+          id: true,
+          testId: true,
+          testTitle: true,
+          testType: true,
+          status: true,
+          durationMs: true,
+        },
+      },
+    },
+    orderBy: { createdAt: "desc" },
+    take: 8,
+  });
+
+  // Projects
   const projects = await db.project.findMany({
-    where: { organizationId: user.activeOrg.id },
+    where: { organizationId: orgId },
     include: {
       _count: {
         select: {
@@ -26,46 +67,62 @@ export default async function DashboardOverviewPage() {
           testRuns: true,
         },
       },
+      testRuns: {
+        take: 1,
+        orderBy: { createdAt: "desc" },
+        select: {
+          id: true,
+          status: true,
+          durationMs: true,
+          createdAt: true,
+        },
+      },
     },
     orderBy: { updatedAt: "desc" },
-    take: 5,
+    take: 6,
   });
 
-  const totalProjects = await db.project.count({
-    where: { organizationId: user.activeOrg.id },
+  // Engine Test Counts
+  const testCountsByType = await db.test.groupBy({
+    by: ["type"],
+    where: { suite: { project: { organizationId: orgId } } },
+    _count: { id: true },
   });
 
-  const totalSuites = await db.testSuite.count({
-    where: { project: { organizationId: user.activeOrg.id } },
-  });
-
-  const totalRuns = await db.testRun.count({
-    where: { project: { organizationId: user.activeOrg.id } },
+  const engineMap: Record<string, number> = {
+    UI: 0,
+    API: 0,
+    ACCESSIBILITY: 0,
+    PERFORMANCE: 0,
+    SEO: 0,
+  };
+  testCountsByType.forEach((t) => {
+    engineMap[t.type] = t._count.id;
   });
 
   return (
-    <div className="space-y-8">
-      {/* Welcome header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-6 border-b border-white/[0.08]">
+    <div className="space-y-6">
+      {/* Top Context & Action Bar */}
+      <div className="pb-4 border-b border-white/[0.08] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <div className="flex items-center gap-2 text-xs font-mono text-zinc-400 mb-1">
-            <Building2 className="w-3.5 h-3.5 text-brand-400" />
-            <span>{user.activeOrg.name}</span>
+          <div className="flex items-center gap-2 text-[11px] font-mono text-zinc-400 mb-0.5">
+            <span className="text-zinc-300 font-semibold">{user.activeOrg.name}</span>
             <span className="text-zinc-600">/</span>
-            <span className="text-zinc-300">Overview</span>
+            <span className="text-zinc-400">Environment: All Targets</span>
           </div>
-          <h1 className="text-2xl font-bold tracking-tight text-white">
-            Welcome back, {user.fullName.split(" ")[0]}
-          </h1>
-          <p className="text-xs text-zinc-400 mt-1">
-            Here is what&apos;s happening with your test infrastructure today.
-          </p>
+          <h1 className="text-xl font-bold tracking-tight text-white">System Overview</h1>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5">
+          <Link
+            href="/dashboard/runs"
+            className="px-3 py-1.5 rounded-md bg-white/[0.06] hover:bg-white/[0.1] text-zinc-200 text-xs font-medium border border-white/[0.08] transition-colors"
+          >
+            Run History
+          </Link>
           <Link
             href="/dashboard/projects/new"
-            className="px-4 py-2 rounded-xl bg-brand-500 hover:bg-brand-400 text-zinc-950 font-bold text-xs flex items-center gap-1.5 transition-colors shadow-sm"
+            className="px-3 py-1.5 rounded-md bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-semibold text-xs flex items-center gap-1.5 transition-colors shadow-sm"
           >
             <Plus className="w-3.5 h-3.5" />
             New Project
@@ -73,98 +130,254 @@ export default async function DashboardOverviewPage() {
         </div>
       </div>
 
-      {/* Metrics Row */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-        <div className="p-5 rounded-2xl glass-panel border border-white/[0.08]">
-          <div className="flex items-center justify-between text-zinc-400 mb-3 text-xs font-mono">
-            <span>ACTIVE PROJECTS</span>
-            <FolderGit2 className="w-4 h-4 text-brand-400" />
+      {/* Engineering Telemetry KPIs */}
+      <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+        <MetricCard label="Projects" value={totalProjects} subtext={`${totalSuites} suites`} />
+        <MetricCard label="Total Tests" value={totalTests} subtext="Across 5 engines" />
+        <MetricCard label="Total Runs" value={totalRuns} subtext="Historical executions" />
+        <MetricCard
+          label="Pass Rate"
+          value={`${passRate}%`}
+          status={passRate >= 90 ? "success" : passRate >= 70 ? "warning" : "error"}
+          subtext={`${passedRuns} passed`}
+        />
+        <MetricCard
+          label="Failures"
+          value={failedRuns}
+          status={failedRuns > 0 ? "error" : "success"}
+          subtext="Requires attention"
+        />
+      </div>
+
+      {/* Main Grid: Recent Test Runs (2/3) + Activity / Engine Fleet (1/3) */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+        {/* Recent Runs Table */}
+        <div className="lg:col-span-2 space-y-2.5">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Activity className="w-4 h-4 text-zinc-400" />
+              <h2 className="text-xs font-semibold uppercase tracking-wider font-mono text-zinc-300">
+                Recent Test Runs
+              </h2>
+            </div>
+            <Link
+              href="/dashboard/runs"
+              className="text-[11px] font-mono text-zinc-400 hover:text-emerald-400 transition-colors flex items-center gap-1"
+            >
+              <span>View all runs</span>
+              <ArrowRight className="w-3 h-3" />
+            </Link>
           </div>
-          <div className="text-3xl font-extrabold text-white font-mono">{totalProjects}</div>
-          <p className="text-[11px] text-zinc-500 mt-1">Applications configured</p>
+
+          <div className="data-table-container">
+            {recentRuns.length === 0 ? (
+              <div className="p-8 text-center text-xs text-zinc-400 font-mono">
+                No recent executions found. Run an automated test to generate telemetry.
+              </div>
+            ) : (
+              <table className="data-table">
+                <thead>
+                  <tr>
+                    <th>Status</th>
+                    <th>Test / Scope</th>
+                    <th>Project</th>
+                    <th>Duration</th>
+                    <th>Env</th>
+                    <th>Started</th>
+                    <th className="text-right">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {recentRuns.map((r) => {
+                    const firstResult = r.testResults[0];
+                    const testTitle = firstResult?.testTitle || r.suite?.name || "Suite Execution";
+                    const durationStr = r.durationMs ? `${(r.durationMs / 1000).toFixed(2)}s` : "-";
+                    const timeAgo = formatTimeAgo(r.createdAt);
+
+                    return (
+                      <tr key={r.id}>
+                        <td>
+                          <StatusBadge status={r.status} size="sm" />
+                        </td>
+                        <td>
+                          <div className="flex items-center gap-1.5">
+                            {firstResult?.testType && (
+                              <EngineBadge type={firstResult.testType} size="xs" />
+                            )}
+                            <span className="font-medium text-zinc-200 truncate max-w-[200px]" title={testTitle}>
+                              {testTitle}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="text-zinc-400">
+                          <Link
+                            href={`/dashboard/projects/${r.project.id}`}
+                            className="hover:text-zinc-200 truncate max-w-[120px] block"
+                          >
+                            {r.project.name}
+                          </Link>
+                        </td>
+                        <td className="font-mono text-zinc-400">{durationStr}</td>
+                        <td>
+                          <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-white/[0.04] text-zinc-400">
+                            {r.environment}
+                          </span>
+                        </td>
+                        <td className="text-zinc-400 font-mono">{timeAgo}</td>
+                        <td className="text-right">
+                          <Link
+                            href={`/dashboard/projects/${r.project.id}/runs/${r.id}/report`}
+                            className="text-[11px] font-mono text-zinc-400 hover:text-emerald-400 transition-colors"
+                          >
+                            Report &rarr;
+                          </Link>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            )}
+          </div>
         </div>
 
-        <div className="p-5 rounded-2xl glass-panel border border-white/[0.08]">
-          <div className="flex items-center justify-between text-zinc-400 mb-3 text-xs font-mono">
-            <span>TEST SUITES</span>
-            <FileCode2 className="w-4 h-4 text-cyan-400" />
-          </div>
-          <div className="text-3xl font-extrabold text-white font-mono">{totalSuites}</div>
-          <p className="text-[11px] text-zinc-500 mt-1">Quality suites defined</p>
-        </div>
+        {/* Engine Fleet & Activity Summary */}
+        <div className="space-y-4">
+          <div>
+            <div className="flex items-center gap-2 mb-2.5">
+              <Layers className="w-4 h-4 text-zinc-400" />
+              <h2 className="text-xs font-semibold uppercase tracking-wider font-mono text-zinc-300">
+                Testing Engine Fleet
+              </h2>
+            </div>
 
-        <div className="p-5 rounded-2xl glass-panel border border-white/[0.08]">
-          <div className="flex items-center justify-between text-zinc-400 mb-3 text-xs font-mono">
-            <span>TOTAL TEST RUNS</span>
-            <PlayCircle className="w-4 h-4 text-violet-400" />
+            <div className="surface-card p-3.5 space-y-2.5">
+              <div className="flex items-center justify-between text-xs">
+                <div className="flex items-center gap-2">
+                  <EngineBadge type="UI" size="xs" />
+                  <span className="text-zinc-300">Playwright Browser</span>
+                </div>
+                <span className="font-mono text-zinc-400">{engineMap.UI} tests</span>
+              </div>
+
+              <div className="flex items-center justify-between text-xs">
+                <div className="flex items-center gap-2">
+                  <EngineBadge type="API" size="xs" />
+                  <span className="text-zinc-300">HTTP / REST API</span>
+                </div>
+                <span className="font-mono text-zinc-400">{engineMap.API} tests</span>
+              </div>
+
+              <div className="flex items-center justify-between text-xs">
+                <div className="flex items-center gap-2">
+                  <EngineBadge type="ACCESSIBILITY" size="xs" />
+                  <span className="text-zinc-300">axe-core WCAG A/AA</span>
+                </div>
+                <span className="font-mono text-zinc-400">{engineMap.ACCESSIBILITY} tests</span>
+              </div>
+
+              <div className="flex items-center justify-between text-xs">
+                <div className="flex items-center gap-2">
+                  <EngineBadge type="PERFORMANCE" size="xs" />
+                  <span className="text-zinc-300">Core Web Vitals</span>
+                </div>
+                <span className="font-mono text-zinc-400">{engineMap.PERFORMANCE} tests</span>
+              </div>
+
+              <div className="flex items-center justify-between text-xs">
+                <div className="flex items-center gap-2">
+                  <EngineBadge type="SEO" size="xs" />
+                  <span className="text-zinc-300">Technical SEO Audit</span>
+                </div>
+                <span className="font-mono text-zinc-400">{engineMap.SEO} tests</span>
+              </div>
+            </div>
           </div>
-          <div className="text-3xl font-extrabold text-white font-mono">{totalRuns}</div>
-          <p className="text-[11px] text-zinc-500 mt-1">Cloud executions</p>
+
+          {/* Quick CLI status callout */}
+          <div className="surface-card p-3.5 space-y-2 border-emerald-500/20 bg-emerald-950/10">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-mono font-semibold text-emerald-400 uppercase tracking-wider">
+                Developer CLI
+              </span>
+              <span className="text-[10px] font-mono text-zinc-400">ready</span>
+            </div>
+            <p className="text-xs text-zinc-300">
+              Trigger test runs directly from your terminal or CI/CD pipelines.
+            </p>
+            <pre className="p-2 rounded bg-black/50 text-[11px] font-mono text-zinc-300 border border-white/[0.06] overflow-x-auto">
+              <code>omnitest run --project {projects[0]?.id ? projects[0].id.slice(0, 8) : "all"}</code>
+            </pre>
+          </div>
         </div>
       </div>
 
-      {/* Recent Projects Section */}
-      <div className="space-y-4">
+      {/* Projects Section */}
+      <div className="space-y-2.5">
         <div className="flex items-center justify-between">
-          <h2 className="text-base font-bold text-white flex items-center gap-2">
-            <FolderGit2 className="w-4 h-4 text-brand-400" />
-            Projects
-          </h2>
+          <div className="flex items-center gap-2">
+            <FolderGit2 className="w-4 h-4 text-zinc-400" />
+            <h2 className="text-xs font-semibold uppercase tracking-wider font-mono text-zinc-300">
+              Active Projects
+            </h2>
+          </div>
           <Link
             href="/dashboard/projects"
-            className="text-xs font-mono text-brand-400 hover:text-brand-300 flex items-center gap-1"
+            className="text-[11px] font-mono text-zinc-400 hover:text-emerald-400 transition-colors flex items-center gap-1"
           >
-            View All ({totalProjects}) <ArrowRight className="w-3 h-3" />
+            <span>All projects</span>
+            <ArrowRight className="w-3 h-3" />
           </Link>
         </div>
 
-        {projects.length === 0 ? (
-          <div className="p-8 sm:p-12 rounded-2xl glass-panel text-center border border-dashed border-white/[0.12] space-y-4">
-            <div className="w-12 h-12 rounded-2xl bg-white/[0.04] border border-white/[0.08] flex items-center justify-center text-zinc-400 mx-auto">
-              <FolderGit2 className="w-6 h-6 text-brand-400" />
-            </div>
-            <div>
-              <h3 className="text-sm font-semibold text-white">No projects created yet</h3>
-              <p className="text-xs text-zinc-400 max-w-sm mx-auto mt-1">
-                Create your first project to start defining automated test suites and running tests on the cloud grid.
-              </p>
-            </div>
-            <Link
-              href="/dashboard/projects/new"
-              className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-brand-500 hover:bg-brand-400 text-zinc-950 font-bold text-xs transition-colors shadow-sm"
-            >
-              <Plus className="w-3.5 h-3.5" />
-              Create Project
-            </Link>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {projects.map((project) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+          {projects.map((p) => {
+            const lastRun = p.testRuns[0];
+            return (
               <Link
-                key={project.id}
-                href={`/dashboard/projects/${project.id}`}
-                className="p-5 rounded-2xl glass-panel border border-white/[0.08] hover:border-white/[0.18] transition-all group block"
+                key={p.id}
+                href={`/dashboard/projects/${p.id}`}
+                className="surface-card p-3.5 surface-hover block space-y-2.5 group"
               >
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-sm font-bold text-white group-hover:text-brand-400 transition-colors">
-                    {project.name}
-                  </h3>
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-white/[0.04] text-zinc-400">
-                    {project.defaultBranch}
+                <div className="flex items-start justify-between gap-2">
+                  <div className="truncate">
+                    <span className="text-sm font-semibold text-white group-hover:text-emerald-400 transition-colors truncate block">
+                      {p.name}
+                    </span>
+                    <span className="text-[11px] font-mono text-zinc-400 truncate block">
+                      {p.baseUrl || "No target URL"}
+                    </span>
+                  </div>
+                  <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-white/[0.04] text-zinc-400 shrink-0 flex items-center gap-1">
+                    <GitBranch className="w-3 h-3" />
+                    {p.defaultBranch}
                   </span>
                 </div>
-                <p className="text-xs text-zinc-400 line-clamp-2 mb-4">
-                  {project.description || "No description provided."}
-                </p>
-                <div className="flex items-center justify-between pt-3 border-t border-white/[0.06] text-[11px] font-mono text-zinc-500">
-                  <span>{project._count.testSuites} Suites</span>
-                  <span>{project._count.testRuns} Runs</span>
+
+                <div className="pt-2 border-t border-white/[0.04] flex items-center justify-between text-xs text-zinc-400">
+                  <span>{p._count.testSuites} suites</span>
+                  {lastRun ? (
+                    <StatusBadge status={lastRun.status} size="sm" />
+                  ) : (
+                    <span className="text-[11px] font-mono text-zinc-400">No runs yet</span>
+                  )}
                 </div>
               </Link>
-            ))}
-          </div>
-        )}
+            );
+          })}
+        </div>
       </div>
     </div>
   );
+}
+
+function formatTimeAgo(date: Date): string {
+  const seconds = Math.floor((Date.now() - new Date(date).getTime()) / 1000);
+  if (seconds < 60) return `${seconds}s ago`;
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes}m ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  return `${days}d ago`;
 }

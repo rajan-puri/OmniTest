@@ -14,6 +14,7 @@ import {
   Code2,
   Camera,
 } from "lucide-react";
+import { StatusBadge } from "@/components/ui/StatusBadge";
 import {
   A11yExecutionResult,
   A11yRuleResult,
@@ -70,34 +71,20 @@ export function A11yResultViewer({ result }: A11yResultViewerProps) {
   const isPassed = result.status === "PASSED";
 
   return (
-    <div className="rounded-2xl glass-panel-elevated border border-white/[0.08] overflow-hidden space-y-0">
+    <div className="surface-card rounded-lg border border-white/[0.08] overflow-hidden space-y-0">
       {/* Top Header & Tally Cards */}
-      <div className="p-5 bg-gradient-to-r from-zinc-950 via-zinc-900 to-black/80 border-b border-white/[0.08] space-y-4">
+      <div className="p-4 border-b border-white/[0.08] space-y-3">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div className="flex items-center gap-3">
-            {isPassed ? (
-              <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center border border-emerald-500/30 shrink-0">
-                <CheckCircle2 className="w-6 h-6" />
-              </div>
-            ) : (
-              <div className="w-10 h-10 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center border border-rose-500/30 shrink-0">
-                <AlertTriangle className="w-6 h-6" />
-              </div>
-            )}
+            <div className="p-2 rounded-md bg-white/[0.04] border border-white/[0.06] shrink-0">
+              <StatusBadge status={result.status} showDotOnly size="md" />
+            </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-base font-bold text-white tracking-tight">
+                <h2 className="text-sm font-bold text-white tracking-tight">
                   Automated Accessibility Audit
                 </h2>
-                <span
-                  className={`px-2 py-0.5 rounded text-[11px] font-mono font-bold ${
-                    isPassed
-                      ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
-                      : "bg-rose-500/20 text-rose-300 border border-rose-500/30"
-                  }`}
-                >
-                  {result.status}
-                </span>
+                <StatusBadge status={result.status} size="sm" />
               </div>
               <p className="text-xs text-zinc-400 font-mono mt-0.5 truncate max-w-xl">
                 Target: {result.url}
@@ -105,46 +92,46 @@ export function A11yResultViewer({ result }: A11yResultViewerProps) {
             </div>
           </div>
 
-          <div className="flex items-center gap-2 font-mono text-xs text-zinc-400 self-start sm:self-auto">
+          <div className="flex items-center gap-1.5 font-mono text-xs text-zinc-400 self-start sm:self-auto shrink-0">
             <Clock className="w-3.5 h-3.5 text-zinc-500" />
             <span>{result.durationMs}ms</span>
           </div>
         </div>
 
         {/* Severity Metrics Bar */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
-          <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-center">
-            <span className="text-[10px] font-mono font-bold uppercase text-rose-400 block">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
+          <div className="p-2 rounded-md bg-black/40 border border-white/[0.06] text-center">
+            <span className="text-[10px] font-mono font-bold uppercase text-rose-400 block mb-0.5">
               Critical
             </span>
-            <span className="text-xl font-bold font-mono text-white">
+            <span className="text-lg font-bold font-mono text-white">
               {result.summary.critical}
             </span>
           </div>
 
-          <div className="p-3 rounded-xl bg-orange-500/10 border border-orange-500/20 text-center">
-            <span className="text-[10px] font-mono font-bold uppercase text-orange-400 block">
+          <div className="p-2 rounded-md bg-black/40 border border-white/[0.06] text-center">
+            <span className="text-[10px] font-mono font-bold uppercase text-orange-400 block mb-0.5">
               Serious
             </span>
-            <span className="text-xl font-bold font-mono text-white">
+            <span className="text-lg font-bold font-mono text-white">
               {result.summary.serious}
             </span>
           </div>
 
-          <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-center">
-            <span className="text-[10px] font-mono font-bold uppercase text-amber-400 block">
+          <div className="p-2 rounded-md bg-black/40 border border-white/[0.06] text-center">
+            <span className="text-[10px] font-mono font-bold uppercase text-amber-400 block mb-0.5">
               Moderate
             </span>
-            <span className="text-xl font-bold font-mono text-white">
+            <span className="text-lg font-bold font-mono text-white">
               {result.summary.moderate}
             </span>
           </div>
 
-          <div className="p-3 rounded-xl bg-blue-500/10 border border-blue-500/20 text-center">
-            <span className="text-[10px] font-mono font-bold uppercase text-blue-400 block">
+          <div className="p-2 rounded-md bg-black/40 border border-white/[0.06] text-center">
+            <span className="text-[10px] font-mono font-bold uppercase text-blue-400 block mb-0.5">
               Minor
             </span>
-            <span className="text-xl font-bold font-mono text-white">
+            <span className="text-lg font-bold font-mono text-white">
               {result.summary.minor}
             </span>
           </div>

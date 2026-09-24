@@ -32,14 +32,14 @@ export function InteractivePreview() {
   };
 
   return (
-    <div className="w-full rounded-2xl glass-panel-elevated overflow-hidden border border-white/[0.1] shadow-2xl">
+    <div className="w-full rounded-lg surface-card overflow-hidden border border-white/[0.08] shadow-2xl">
       {/* Window Title Bar */}
-      <div className="flex flex-wrap items-center justify-between px-4 py-3 bg-[#0D0F14] border-b border-white/[0.08] gap-3">
+      <div className="flex flex-wrap items-center justify-between px-4 py-2.5 bg-[#0E1017] border-b border-white/[0.08] gap-3">
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1.5 mr-2">
-            <div className="w-3 h-3 rounded-full bg-rose-500/80" />
-            <div className="w-3 h-3 rounded-full bg-amber-500/80" />
-            <div className="w-3 h-3 rounded-full bg-emerald-500/80" />
+            <div className="w-2.5 h-2.5 rounded-full bg-zinc-700" />
+            <div className="w-2.5 h-2.5 rounded-full bg-zinc-700" />
+            <div className="w-2.5 h-2.5 rounded-full bg-zinc-700" />
           </div>
           <span className="font-mono text-xs text-zinc-400 font-medium hidden sm:inline">
             omnitest.config.ts — runner-grid-us-east-1
@@ -47,53 +47,53 @@ export function InteractivePreview() {
         </div>
 
         {/* Engine switcher tabs */}
-        <div className="flex items-center rounded-lg bg-black/40 p-1 border border-white/[0.06]">
+        <div className="flex items-center rounded-md bg-black/40 p-0.5 border border-white/[0.06]">
           <button
             type="button"
             onClick={() => setActiveTab("ui")}
-            className={`px-2.5 py-1 rounded text-xs font-mono font-medium transition-all flex items-center gap-1.5 ${
+            className={`px-2.5 py-1 rounded text-xs font-mono font-medium transition-colors flex items-center gap-1.5 ${
               activeTab === "ui"
-                ? "bg-brand-500/15 text-brand-400 border border-brand-500/30"
+                ? "bg-white/[0.08] text-white"
                 : "text-zinc-400 hover:text-white"
             }`}
           >
-            <Video className="w-3 h-3" />
+            <Video className="w-3 h-3 text-zinc-400" />
             UI (Playwright)
           </button>
           <button
             type="button"
             onClick={() => setActiveTab("api")}
-            className={`px-2.5 py-1 rounded text-xs font-mono font-medium transition-all flex items-center gap-1.5 ${
+            className={`px-2.5 py-1 rounded text-xs font-mono font-medium transition-colors flex items-center gap-1.5 ${
               activeTab === "api"
-                ? "bg-cyan-500/15 text-cyan-400 border border-cyan-500/30"
+                ? "bg-white/[0.08] text-white"
                 : "text-zinc-400 hover:text-white"
             }`}
           >
-            <FileCode className="w-3 h-3" />
+            <FileCode className="w-3 h-3 text-zinc-400" />
             API Assertions
           </button>
           <button
             type="button"
             onClick={() => setActiveTab("a11y")}
-            className={`px-2.5 py-1 rounded text-xs font-mono font-medium transition-all flex items-center gap-1.5 ${
+            className={`px-2.5 py-1 rounded text-xs font-mono font-medium transition-colors flex items-center gap-1.5 ${
               activeTab === "a11y"
-                ? "bg-violet-500/15 text-violet-400 border border-violet-500/30"
+                ? "bg-white/[0.08] text-white"
                 : "text-zinc-400 hover:text-white"
             }`}
           >
-            <ShieldCheck className="w-3 h-3" />
+            <ShieldCheck className="w-3 h-3 text-zinc-400" />
             Accessibility (axe)
           </button>
           <button
             type="button"
             onClick={() => setActiveTab("perf")}
-            className={`px-2.5 py-1 rounded text-xs font-mono font-medium transition-all flex items-center gap-1.5 ${
+            className={`px-2.5 py-1 rounded text-xs font-mono font-medium transition-colors flex items-center gap-1.5 ${
               activeTab === "perf"
-                ? "bg-amber-500/15 text-amber-400 border border-amber-500/30"
+                ? "bg-white/[0.08] text-white"
                 : "text-zinc-400 hover:text-white"
             }`}
           >
-            <Gauge className="w-3 h-3" />
+            <Gauge className="w-3 h-3 text-zinc-400" />
             Lighthouse
           </button>
         </div>
@@ -103,7 +103,7 @@ export function InteractivePreview() {
           type="button"
           onClick={handleSimulateRun}
           disabled={isRunning}
-          className="flex items-center gap-1.5 px-3 py-1 rounded-md bg-brand-500 text-zinc-950 font-mono text-xs font-bold hover:bg-brand-400 transition-colors disabled:opacity-50"
+          className="flex items-center gap-1.5 px-3 py-1 rounded-md bg-emerald-500 text-zinc-950 font-mono text-xs font-semibold hover:bg-emerald-400 transition-colors disabled:opacity-50"
         >
           {isRunning ? (
             <>

@@ -131,29 +131,29 @@ export function VisualComparisonViewer({
     switch (status) {
       case "PASSED":
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-            <CheckCircle2 className="w-3.5 h-3.5" />
+          <span className="inline-flex items-center gap-1.5 text-xs font-mono font-medium text-emerald-400">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
             PASS ({metrics?.differencePercentage ?? 0}% Diff)
           </span>
         );
       case "FAILED":
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-rose-500/10 text-rose-400 border border-rose-500/20">
-            <XCircle className="w-3.5 h-3.5" />
+          <span className="inline-flex items-center gap-1.5 text-xs font-mono font-medium text-rose-400">
+            <span className="w-1.5 h-1.5 rounded-full bg-rose-400" />
             FAIL ({metrics?.differencePercentage ?? 0}% Diff)
           </span>
         );
       case "DIMENSION_MISMATCH":
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20">
-            <AlertTriangle className="w-3.5 h-3.5" />
+          <span className="inline-flex items-center gap-1.5 text-xs font-mono font-medium text-amber-400">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
             DIMENSION MISMATCH
           </span>
         );
       case "NO_BASELINE":
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/20">
-            <HelpCircle className="w-3.5 h-3.5" />
+          <span className="inline-flex items-center gap-1.5 text-xs font-mono font-medium text-zinc-400">
+            <span className="w-1.5 h-1.5 rounded-full bg-zinc-500" />
             NO BASELINE
           </span>
         );
@@ -163,26 +163,26 @@ export function VisualComparisonViewer({
   };
 
   return (
-    <div className="flex flex-col gap-6 w-full">
+    <div className="flex flex-col gap-4 w-full">
       {/* Top Header & Metrics Bar */}
-      <div className="bg-slate-900/90 border border-slate-800 rounded-xl p-5 shadow-lg backdrop-blur">
+      <div className="surface-card border border-white/[0.08] rounded-lg p-4">
         <div className="flex flex-wrap items-center justify-between gap-4">
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-0.5">
             <div className="flex items-center gap-3">
-              <h2 className="text-xl font-bold text-slate-100">Visual Regression Comparison</h2>
+              <h2 className="text-base font-bold text-white font-mono">Visual Regression Comparison</h2>
               {renderStatusBadge()}
             </div>
-            {testTitle && <p className="text-sm text-slate-400 font-mono">{testTitle}</p>}
+            {testTitle && <p className="text-xs text-zinc-400 font-mono">{testTitle}</p>}
           </div>
 
           {/* Action buttons */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             {testId && currentArtifactId && (
               <button
                 onClick={() => setShowConfirmModal(true)}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-lg shadow transition"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/[0.04] hover:bg-white/[0.08] text-zinc-200 text-xs font-mono font-medium rounded-md border border-white/[0.08] transition-colors"
               >
-                <RefreshCw className="w-3.5 h-3.5" />
+                <RefreshCw className="w-3.5 h-3.5 text-zinc-400" />
                 {status === "NO_BASELINE" ? "Set as Baseline" : "Update Baseline"}
               </button>
             )}
@@ -191,9 +191,9 @@ export function VisualComparisonViewer({
               <a
                 href={effectiveDiffUrl}
                 download="diff.png"
-                className="inline-flex items-center gap-1.5 px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium rounded-lg border border-slate-700 transition"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/[0.04] hover:bg-white/[0.08] text-zinc-300 text-xs font-mono font-medium rounded-md border border-white/[0.08] transition-colors"
               >
-                <Download className="w-3.5 h-3.5" />
+                <Download className="w-3.5 h-3.5 text-zinc-500" />
                 Download Diff
               </a>
             )}
@@ -201,78 +201,78 @@ export function VisualComparisonViewer({
         </div>
 
         {updateSuccess && (
-          <div className="mt-4 p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-lg flex items-center gap-2 text-emerald-400 text-xs font-medium">
-            <Check className="w-4 h-4" />
-            Baseline updated successfully! Future test executions will compare against this screenshot.
+          <div className="mt-3 p-2.5 bg-emerald-500/10 border border-emerald-500/20 rounded-md flex items-center gap-2 text-emerald-400 text-xs font-mono">
+            <Check className="w-4 h-4 shrink-0" />
+            Baseline updated successfully. Future test runs will compare against this screenshot.
           </div>
         )}
 
         {errorMessage && (
-          <div className="mt-4 p-3 bg-rose-500/10 border border-rose-500/30 rounded-lg flex items-center gap-2 text-rose-400 text-xs font-medium">
-            <AlertTriangle className="w-4 h-4" />
+          <div className="mt-3 p-2.5 bg-rose-500/10 border border-rose-500/20 rounded-md flex items-center gap-2 text-rose-400 text-xs font-mono">
+            <AlertTriangle className="w-4 h-4 shrink-0" />
             {errorMessage}
           </div>
         )}
 
         {/* Metrics Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-3 mt-5 pt-4 border-t border-slate-800 text-xs">
-          <div className="bg-slate-950/60 p-2.5 rounded-lg border border-slate-800/80">
-            <span className="text-slate-400 block text-[11px]">Difference %</span>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 mt-4 pt-3 border-t border-white/[0.06] text-xs font-mono">
+          <div className="bg-black/40 p-2 rounded-md border border-white/[0.06]">
+            <span className="text-zinc-500 block text-[10px] uppercase">Diff %</span>
             <span
-              className={`text-sm font-bold font-mono ${
-                status === "PASSED" ? "text-emerald-400" : status === "FAILED" ? "text-rose-400" : "text-slate-200"
+              className={`text-sm font-bold ${
+                status === "PASSED" ? "text-emerald-400" : status === "FAILED" ? "text-rose-400" : "text-zinc-200"
               }`}
             >
               {metrics ? `${metrics.differencePercentage}%` : "—"}
             </span>
           </div>
 
-          <div className="bg-slate-950/60 p-2.5 rounded-lg border border-slate-800/80">
-            <span className="text-slate-400 block text-[11px]">Threshold %</span>
-            <span className="text-sm font-semibold font-mono text-slate-200">
+          <div className="bg-black/40 p-2 rounded-md border border-white/[0.06]">
+            <span className="text-zinc-500 block text-[10px] uppercase">Threshold</span>
+            <span className="text-sm font-semibold text-zinc-200">
               {metrics ? `${metrics.thresholdPercentage}%` : "0.1%"}
             </span>
           </div>
 
-          <div className="bg-slate-950/60 p-2.5 rounded-lg border border-slate-800/80">
-            <span className="text-slate-400 block text-[11px]">Changed Pixels</span>
-            <span className="text-sm font-semibold font-mono text-slate-200">
+          <div className="bg-black/40 p-2 rounded-md border border-white/[0.06]">
+            <span className="text-zinc-500 block text-[10px] uppercase">Changed</span>
+            <span className="text-sm font-semibold text-zinc-200">
               {metrics ? metrics.changedPixels.toLocaleString() : "—"}
             </span>
           </div>
 
-          <div className="bg-slate-950/60 p-2.5 rounded-lg border border-slate-800/80">
-            <span className="text-slate-400 block text-[11px]">Total Pixels</span>
-            <span className="text-sm font-semibold font-mono text-slate-200">
+          <div className="bg-black/40 p-2 rounded-md border border-white/[0.06]">
+            <span className="text-zinc-500 block text-[10px] uppercase">Total Pixels</span>
+            <span className="text-sm font-semibold text-zinc-200">
               {metrics ? metrics.totalPixels.toLocaleString() : "—"}
             </span>
           </div>
 
-          <div className="bg-slate-950/60 p-2.5 rounded-lg border border-slate-800/80">
-            <span className="text-slate-400 block text-[11px]">Current Dim.</span>
-            <span className="text-sm font-semibold font-mono text-slate-200">
-              {metrics ? `${metrics.currentWidth} × ${metrics.currentHeight}` : "—"}
+          <div className="bg-black/40 p-2 rounded-md border border-white/[0.06]">
+            <span className="text-zinc-500 block text-[10px] uppercase">Current Dim</span>
+            <span className="text-sm font-semibold text-zinc-200">
+              {metrics ? `${metrics.currentWidth}×${metrics.currentHeight}` : "—"}
             </span>
           </div>
 
-          <div className="bg-slate-950/60 p-2.5 rounded-lg border border-slate-800/80">
-            <span className="text-slate-400 block text-[11px]">Baseline Dim.</span>
-            <span className="text-sm font-semibold font-mono text-slate-200">
-              {metrics ? `${metrics.baselineWidth} × ${metrics.baselineHeight}` : "—"}
+          <div className="bg-black/40 p-2 rounded-md border border-white/[0.06]">
+            <span className="text-zinc-500 block text-[10px] uppercase">Baseline Dim</span>
+            <span className="text-sm font-semibold text-zinc-200">
+              {metrics ? `${metrics.baselineWidth}×${metrics.baselineHeight}` : "—"}
             </span>
           </div>
         </div>
       </div>
 
       {/* Mode Switcher Toolbar */}
-      <div className="flex flex-wrap items-center justify-between gap-4 bg-slate-900 border border-slate-800 p-2.5 rounded-xl">
-        <div className="flex items-center gap-1.5">
+      <div className="flex flex-wrap items-center justify-between gap-3 surface-card border border-white/[0.08] p-1.5 rounded-lg">
+        <div className="flex items-center gap-1">
           <button
             onClick={() => setViewMode("side-by-side")}
-            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition ${
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-mono transition-colors ${
               viewMode === "side-by-side"
-                ? "bg-indigo-600 text-white shadow"
-                : "text-slate-400 hover:text-slate-200 hover:bg-slate-800"
+                ? "bg-white/[0.08] text-white font-semibold border border-white/[0.08]"
+                : "text-zinc-400 hover:text-white"
             }`}
           >
             <Columns className="w-3.5 h-3.5" />
@@ -281,10 +281,10 @@ export function VisualComparisonViewer({
 
           <button
             onClick={() => setViewMode("diff")}
-            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition ${
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-mono transition-colors ${
               viewMode === "diff"
-                ? "bg-indigo-600 text-white shadow"
-                : "text-slate-400 hover:text-slate-200 hover:bg-slate-800"
+                ? "bg-white/[0.08] text-white font-semibold border border-white/[0.08]"
+                : "text-zinc-400 hover:text-white"
             }`}
           >
             <Eye className="w-3.5 h-3.5" />
@@ -293,10 +293,10 @@ export function VisualComparisonViewer({
 
           <button
             onClick={() => setViewMode("slider")}
-            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition ${
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-mono transition-colors ${
               viewMode === "slider"
-                ? "bg-indigo-600 text-white shadow"
-                : "text-slate-400 hover:text-slate-200 hover:bg-slate-800"
+                ? "bg-white/[0.08] text-white font-semibold border border-white/[0.08]"
+                : "text-zinc-400 hover:text-white"
             }`}
           >
             <Sliders className="w-3.5 h-3.5" />
@@ -305,10 +305,10 @@ export function VisualComparisonViewer({
 
           <button
             onClick={() => setViewMode("overlay")}
-            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition ${
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-mono transition-colors ${
               viewMode === "overlay"
-                ? "bg-indigo-600 text-white shadow"
-                : "text-slate-400 hover:text-slate-200 hover:bg-slate-800"
+                ? "bg-white/[0.08] text-white font-semibold border border-white/[0.08]"
+                : "text-zinc-400 hover:text-white"
             }`}
           >
             <Layers className="w-3.5 h-3.5" />
@@ -318,7 +318,7 @@ export function VisualComparisonViewer({
 
         {/* View mode specific controls */}
         {viewMode === "slider" && (
-          <div className="flex items-center gap-3 text-xs text-slate-300">
+          <div className="flex items-center gap-2.5 text-xs font-mono text-zinc-300 pr-2">
             <span>Split: {Math.round(sliderPosition)}%</span>
             <input
               type="range"
@@ -326,13 +326,13 @@ export function VisualComparisonViewer({
               max="100"
               value={sliderPosition}
               onChange={(e) => setSliderPosition(Number(e.target.value))}
-              className="w-36 accent-indigo-500 cursor-pointer"
+              className="w-32 accent-emerald-400 cursor-pointer"
             />
           </div>
         )}
 
         {viewMode === "overlay" && (
-          <div className="flex items-center gap-3 text-xs text-slate-300">
+          <div className="flex items-center gap-2.5 text-xs font-mono text-zinc-300 pr-2">
             <span>Current Opacity: {overlayOpacity}%</span>
             <input
               type="range"
@@ -340,33 +340,33 @@ export function VisualComparisonViewer({
               max="100"
               value={overlayOpacity}
               onChange={(e) => setOverlayOpacity(Number(e.target.value))}
-              className="w-36 accent-indigo-500 cursor-pointer"
+              className="w-32 accent-emerald-400 cursor-pointer"
             />
           </div>
         )}
       </div>
 
       {/* Main Interactive Stage */}
-      <div className="bg-slate-950 border border-slate-800 rounded-xl p-4 overflow-hidden min-h-[500px] flex items-center justify-center">
+      <div className="bg-black/60 border border-white/[0.08] rounded-lg p-4 overflow-hidden min-h-[460px] flex items-center justify-center">
         {/* Mode 1: Side by Side */}
         {viewMode === "side-by-side" && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
             {/* Baseline Column */}
             <div className="flex flex-col gap-2">
-              <div className="flex items-center justify-between text-xs px-1 text-slate-400">
-                <span className="font-semibold text-slate-300">Baseline Image</span>
+              <div className="flex items-center justify-between text-xs px-1 font-mono text-zinc-400">
+                <span className="font-semibold text-zinc-300">Baseline Image</span>
                 <span>{metrics ? `${metrics.baselineWidth} × ${metrics.baselineHeight} px` : "Expected"}</span>
               </div>
-              <div className="border border-slate-800 rounded-lg overflow-hidden bg-slate-900/50 flex items-center justify-center p-2 min-h-[300px]">
+              <div className="border border-white/[0.08] rounded-md overflow-hidden bg-black/40 flex items-center justify-center p-2 min-h-[300px]">
                 {effectiveBaselineUrl ? (
                   <img
                     src={effectiveBaselineUrl}
                     alt="Baseline"
-                    className="max-w-full h-auto object-contain rounded shadow"
+                    className="max-w-full h-auto object-contain rounded"
                   />
                 ) : (
-                  <div className="text-center p-8 text-slate-500 text-xs">
-                    <HelpCircle className="w-8 h-8 mx-auto mb-2 text-slate-600" />
+                  <div className="text-center p-8 text-zinc-500 text-xs font-mono">
+                    <HelpCircle className="w-6 h-6 mx-auto mb-2 text-zinc-600" />
                     No baseline image set yet.
                   </div>
                 )}
@@ -375,19 +375,19 @@ export function VisualComparisonViewer({
 
             {/* Current Column */}
             <div className="flex flex-col gap-2">
-              <div className="flex items-center justify-between text-xs px-1 text-slate-400">
-                <span className="font-semibold text-slate-300">Current Screenshot</span>
+              <div className="flex items-center justify-between text-xs px-1 font-mono text-zinc-400">
+                <span className="font-semibold text-zinc-300">Current Screenshot</span>
                 <span>{metrics ? `${metrics.currentWidth} × ${metrics.currentHeight} px` : "Actual"}</span>
               </div>
-              <div className="border border-slate-800 rounded-lg overflow-hidden bg-slate-900/50 flex items-center justify-center p-2 min-h-[300px]">
+              <div className="border border-white/[0.08] rounded-md overflow-hidden bg-black/40 flex items-center justify-center p-2 min-h-[300px]">
                 {effectiveCurrentUrl ? (
                   <img
                     src={effectiveCurrentUrl}
                     alt="Current Screenshot"
-                    className="max-w-full h-auto object-contain rounded shadow"
+                    className="max-w-full h-auto object-contain rounded"
                   />
                 ) : (
-                  <div className="text-center p-8 text-slate-500 text-xs">
+                  <div className="text-center p-8 text-zinc-500 text-xs font-mono">
                     No current screenshot captured.
                   </div>
                 )}
@@ -398,28 +398,28 @@ export function VisualComparisonViewer({
 
         {/* Mode 2: Diff View */}
         {viewMode === "diff" && (
-          <div className="flex flex-col items-center justify-center w-full gap-4">
-            <div className="flex items-center justify-between w-full max-w-4xl text-xs text-slate-400 px-1">
-              <span className="font-semibold text-slate-300">Pixel Difference Highlight (Magenta = Changed)</span>
-              <span className="text-rose-400 font-mono font-medium">
+          <div className="flex flex-col items-center justify-center w-full gap-3">
+            <div className="flex items-center justify-between w-full max-w-4xl text-xs font-mono text-zinc-400 px-1">
+              <span className="font-semibold text-zinc-300">Pixel Difference Highlight (Magenta = Changed)</span>
+              <span className="text-rose-400 font-medium">
                 {metrics ? `${metrics.changedPixels.toLocaleString()} pixels changed (${metrics.differencePercentage}%)` : ""}
               </span>
             </div>
-            <div className="border border-slate-800 rounded-lg overflow-hidden bg-slate-900/80 p-3 max-w-full shadow-2xl">
+            <div className="border border-white/[0.08] rounded-md overflow-hidden bg-black/40 p-2 max-w-full">
               {effectiveDiffUrl ? (
                 <img
                   src={effectiveDiffUrl}
                   alt="Visual Diff"
-                  className="max-w-full h-auto object-contain rounded shadow"
+                  className="max-w-full h-auto object-contain rounded"
                 />
               ) : status === "NO_BASELINE" ? (
-                <div className="text-center p-12 text-slate-500 text-sm">
+                <div className="text-center p-12 text-zinc-500 text-xs font-mono">
                   Diff image unavailable because no baseline was set for this test.
                 </div>
               ) : (
-                <div className="text-center p-12 text-emerald-400 text-sm flex flex-col items-center gap-2">
-                  <CheckCircle2 className="w-8 h-8" />
-                  0 pixel difference detected! The screenshot matches the baseline perfectly.
+                <div className="text-center p-12 text-emerald-400 text-xs font-mono flex flex-col items-center gap-2">
+                  <CheckCircle2 className="w-6 h-6" />
+                  0 pixel difference detected. The screenshot matches the baseline perfectly.
                 </div>
               )}
             </div>
@@ -428,14 +428,14 @@ export function VisualComparisonViewer({
 
         {/* Mode 3: Split Slider */}
         {viewMode === "slider" && (
-          <div className="w-full flex flex-col items-center gap-3">
-            <p className="text-xs text-slate-400">
-              Drag the center slider or use mouse to wipe between Baseline (left) and Current (right).
+          <div className="w-full flex flex-col items-center gap-2">
+            <p className="text-xs font-mono text-zinc-500">
+              Drag the center divider to compare Baseline (left) and Current (right).
             </p>
             <div
               ref={sliderRef}
               onMouseDown={handleMouseDown}
-              className="relative max-w-4xl w-full border border-slate-800 rounded-lg overflow-hidden select-none cursor-ew-resize bg-slate-900"
+              className="relative max-w-4xl w-full border border-white/[0.08] rounded-md overflow-hidden select-none cursor-ew-resize bg-black/40"
             >
               {/* Baseline Image (Underneath) */}
               {effectiveBaselineUrl && (
@@ -464,10 +464,10 @@ export function VisualComparisonViewer({
 
               {/* Divider Line */}
               <div
-                className="absolute top-0 bottom-0 w-0.5 bg-indigo-500 shadow-[0_0_10px_rgba(99,102,241,0.8)] pointer-events-none"
+                className="absolute top-0 bottom-0 w-0.5 bg-emerald-400 pointer-events-none"
                 style={{ left: `${sliderPosition}%` }}
               >
-                <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-6 h-6 bg-indigo-600 rounded-full border-2 border-white flex items-center justify-center shadow-lg text-[10px] text-white font-bold">
+                <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-5 h-5 bg-zinc-900 rounded-full border border-white/50 flex items-center justify-center shadow text-[9px] text-white">
                   ⟷
                 </div>
               </div>
@@ -477,11 +477,11 @@ export function VisualComparisonViewer({
 
         {/* Mode 4: Opacity Overlay */}
         {viewMode === "overlay" && (
-          <div className="w-full flex flex-col items-center gap-3">
-            <p className="text-xs text-slate-400">
-              Baseline is fixed underneath. Adjust the Current screenshot opacity to detect shifts.
+          <div className="w-full flex flex-col items-center gap-2">
+            <p className="text-xs font-mono text-zinc-500">
+              Baseline is fixed underneath. Adjust the Current screenshot opacity slider above.
             </p>
-            <div className="relative max-w-4xl w-full border border-slate-800 rounded-lg overflow-hidden bg-slate-900">
+            <div className="relative max-w-4xl w-full border border-white/[0.08] rounded-md overflow-hidden bg-black/40">
               {/* Baseline */}
               {effectiveBaselineUrl ? (
                 <img
@@ -490,7 +490,7 @@ export function VisualComparisonViewer({
                   className="w-full h-auto block select-none"
                 />
               ) : (
-                <div className="p-8 text-center text-slate-500 text-xs">No baseline set</div>
+                <div className="p-8 text-center text-zinc-500 text-xs font-mono">No baseline set</div>
               )}
 
               {/* Current overlaid with opacity */}
@@ -509,36 +509,36 @@ export function VisualComparisonViewer({
 
       {/* Confirmation Modal for Baseline Replacement */}
       {showConfirmModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-xl max-w-md w-full p-6 shadow-2xl flex flex-col gap-4">
-            <div className="flex items-center gap-3 text-amber-400">
-              <AlertTriangle className="w-6 h-6" />
-              <h3 className="text-lg font-bold text-slate-100">
-                {status === "NO_BASELINE" ? "Set Initial Baseline?" : "Replace Existing Baseline?"}
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+          <div className="bg-[#111319] border border-white/[0.1] rounded-lg max-w-md w-full p-5 shadow-2xl flex flex-col gap-3 font-mono">
+            <div className="flex items-center gap-2.5 text-amber-400">
+              <AlertTriangle className="w-5 h-5" />
+              <h3 className="text-sm font-bold text-white">
+                {status === "NO_BASELINE" ? "Set Initial Baseline?" : "Replace Baseline?"}
               </h3>
             </div>
 
-            <p className="text-sm text-slate-300 leading-relaxed">
+            <p className="text-xs text-zinc-300 leading-relaxed">
               {status === "NO_BASELINE"
                 ? "This will save the current screenshot as the golden baseline for all future runs of this test."
                 : "This action will permanently replace the active baseline for this test with the current screenshot. All subsequent visual regression tests will be evaluated against this new image."}
             </p>
 
-            <div className="flex items-center justify-end gap-3 mt-2">
+            <div className="flex items-center justify-end gap-2 mt-2">
               <button
                 onClick={() => setShowConfirmModal(false)}
                 disabled={isUpdatingBaseline}
-                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-lg transition"
+                className="px-3 py-1.5 bg-white/[0.04] hover:bg-white/[0.08] text-zinc-300 text-xs rounded-md border border-white/[0.08] transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={handleUpdateBaseline}
                 disabled={isUpdatingBaseline}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-lg shadow transition disabled:opacity-50"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold text-xs rounded-md transition-colors disabled:opacity-50"
               >
                 {isUpdatingBaseline && <RefreshCw className="w-3.5 h-3.5 animate-spin" />}
-                {status === "NO_BASELINE" ? "Confirm & Set Baseline" : "Confirm Baseline Update"}
+                {status === "NO_BASELINE" ? "Confirm & Set Baseline" : "Confirm Update"}
               </button>
             </div>
           </div>

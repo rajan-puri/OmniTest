@@ -33,6 +33,8 @@ import { PerformanceResultViewer } from "@/components/performance/PerformanceRes
 import { SeoResultViewer } from "@/components/seo/SeoResultViewer";
 import { VisualRegressionCard } from "@/components/visual/VisualRegressionCard";
 import { TestDetailHistory } from "@/components/history/TestDetailHistory";
+import { StatusBadge } from "@/components/ui/StatusBadge";
+import { EngineBadge } from "@/components/ui/EngineBadge";
 
 interface TestDetail {
   id: string;
@@ -236,7 +238,7 @@ export default function TestDetailPage({
       : null;
 
   return (
-    <div className="max-w-5xl mx-auto space-y-8">
+    <div className="max-w-5xl mx-auto space-y-6">
       {/* Navigation & Header */}
       <div>
         <Link
@@ -247,51 +249,29 @@ export default function TestDetailPage({
           Back to {test.projectName}
         </Link>
 
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-6 border-b border-white/[0.08]">
-          <div>
-            <div className="flex items-center gap-2 text-xs font-mono text-zinc-400 mb-1">
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 pb-5 border-b border-white/[0.08]">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2 text-xs font-mono text-zinc-400">
               <span>{test.projectName}</span>
               <span className="text-zinc-600">/</span>
               <span className="text-zinc-400">{test.suiteName}</span>
               <span className="text-zinc-600">/</span>
-              <span
-                className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
-                  test.type === "API"
-                    ? "bg-emerald-500/15 text-emerald-300 border border-emerald-500/25"
-                    : test.type === "ACCESSIBILITY"
-                    ? "bg-amber-500/15 text-amber-300 border border-amber-500/25"
-                    : test.type === "PERFORMANCE"
-                    ? "bg-purple-500/15 text-purple-300 border border-purple-500/25"
-                    : test.type === "SEO"
-                    ? "bg-teal-500/15 text-teal-300 border border-teal-500/25"
-                    : "bg-brand-500/15 text-brand-300 border border-brand-500/25"
-                }`}
-              >
-                {test.type === "API"
-                  ? "API Test"
-                  : test.type === "ACCESSIBILITY"
-                  ? "Accessibility Test"
-                  : test.type === "PERFORMANCE"
-                  ? "Performance Test"
-                  : test.type === "SEO"
-                  ? "SEO Audit"
-                  : "Browser Test"}
-              </span>
+              <EngineBadge type={test.type} />
             </div>
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white flex items-center gap-3">
+            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-white flex items-center gap-2">
               {test.title}
             </h1>
-            <p className="text-xs sm:text-sm text-zinc-400 mt-1 max-w-2xl">
+            <p className="text-xs text-zinc-400 max-w-2xl">
               {test.description || "No description provided."}
             </p>
           </div>
 
-          <div className="flex items-center gap-2.5 self-start sm:self-auto">
+          <div className="flex items-center gap-2 self-start sm:self-auto shrink-0">
             <Link
               href={`/dashboard/projects/${test.projectId}/history?testId=${test.id}`}
-              className="px-4 py-2.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.1] text-zinc-300 hover:text-white font-semibold text-xs border border-white/[0.08] flex items-center gap-1.5 transition-colors font-mono"
+              className="px-3 py-1.5 rounded-md bg-white/[0.04] hover:bg-white/[0.08] text-zinc-300 hover:text-white font-medium text-xs border border-white/[0.08] flex items-center gap-1.5 transition-colors font-mono"
             >
-              <History className="w-3.5 h-3.5 text-brand-400" />
+              <History className="w-3.5 h-3.5 text-zinc-400" />
               History
             </Link>
 
@@ -299,17 +279,17 @@ export default function TestDetailPage({
               type="button"
               onClick={handleRunTest}
               disabled={isRunning}
-              className="px-5 py-2.5 rounded-xl bg-brand-500 hover:bg-brand-400 text-zinc-950 font-bold text-xs flex items-center gap-2 transition-all shadow-md shadow-brand-500/20 disabled:opacity-50"
+              className="px-3.5 py-1.5 rounded-md bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-semibold text-xs flex items-center gap-1.5 transition-colors disabled:opacity-50"
             >
               {isRunning ? (
                 <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  Executing Test...
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  Executing...
                 </>
               ) : (
                 <>
-                  <Play className="w-4 h-4 fill-current" />
-                  Run Test Now
+                  <Play className="w-3.5 h-3.5 fill-current" />
+                  Run Test
                 </>
               )}
             </button>
@@ -340,37 +320,37 @@ export default function TestDetailPage({
               <ApiResponseViewer result={apiExecutionResult} />
             </div>
           ) : (
-            <div className="py-16 px-4 rounded-2xl glass-panel text-center border border-dashed border-white/[0.12] space-y-4">
-              <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 mx-auto">
-                <Globe2 className="w-6 h-6" />
+            <div className="py-14 px-4 rounded-lg surface-card text-center border border-dashed border-white/[0.12] space-y-3">
+              <div className="w-10 h-10 rounded-md bg-white/[0.04] border border-white/[0.08] flex items-center justify-center text-zinc-400 mx-auto">
+                <Globe2 className="w-4 h-4 text-emerald-400" />
               </div>
               <div>
-                <h3 className="text-base font-semibold text-white">No API executions yet</h3>
+                <h3 className="text-sm font-semibold text-white">No API executions yet</h3>
                 <p className="text-xs text-zinc-400 max-w-sm mx-auto mt-1">
-                  Click &quot;Run Test Now&quot; above to dispatch the HTTP request and evaluate configured response assertions.
+                  Click &quot;Run Test&quot; above to dispatch the HTTP request and evaluate configured response assertions.
                 </p>
               </div>
             </div>
           )}
 
           {/* API Request Configuration Card */}
-          <div className="p-6 rounded-2xl glass-panel border border-white/[0.08] space-y-4">
+          <div className="surface-card rounded-lg border border-white/[0.08] p-4 space-y-3">
             <h2 className="text-xs font-mono font-bold uppercase tracking-wider text-zinc-400">
               Configured API Test Definition
             </h2>
             <div className="space-y-2 text-xs font-mono">
-              <div className="p-3 rounded-xl bg-black/40 border border-white/[0.06] flex items-center gap-2">
+              <div className="p-2.5 rounded-md bg-black/40 border border-white/[0.06] flex items-center gap-2">
                 <span className="text-emerald-400 font-bold uppercase">{test.config.method || "GET"}</span>
                 <span className="text-white break-all">{test.config.url}</span>
               </div>
 
               {test.config.assertions && test.config.assertions.length > 0 && (
-                <div className="p-3 rounded-xl bg-black/40 border border-white/[0.06] space-y-1">
+                <div className="p-2.5 rounded-md bg-black/40 border border-white/[0.06] space-y-1">
                   <span className="text-[11px] text-zinc-400 block mb-1">Expected Assertions:</span>
                   {test.config.assertions.map((a: any, i: number) => (
                     <div key={i} className="text-zinc-300 flex items-center gap-1.5">
                       <span className="text-zinc-500">•</span>
-                      <span className="text-brand-300 uppercase">{a.type.replace(/_/g, " ")}</span>
+                      <span className="text-zinc-200 uppercase font-medium">{a.type.replace(/_/g, " ")}</span>
                       {a.property && <span>on `{a.property}`</span>}
                       {a.expected && <span className="text-zinc-400">(expected: &quot;{a.expected}&quot;)</span>}
                     </div>
@@ -384,11 +364,11 @@ export default function TestDetailPage({
 
       {/* ACCESSIBILITY TEST RESULT SECTION */}
       {test.type === "ACCESSIBILITY" && (
-        <div className="space-y-6">
+        <div className="space-y-4">
           {a11yExecutionResult ? (
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <h2 className="text-sm font-bold text-white uppercase tracking-wider font-mono">
+                <h2 className="text-xs font-bold text-zinc-300 uppercase tracking-wider font-mono">
                   Accessibility Audit Results (axe-core)
                 </h2>
                 <span className="text-xs font-mono text-zinc-500">
@@ -398,40 +378,40 @@ export default function TestDetailPage({
               <A11yResultViewer result={a11yExecutionResult} />
             </div>
           ) : (
-            <div className="py-16 px-4 rounded-2xl glass-panel text-center border border-dashed border-white/[0.12] space-y-4">
-              <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 mx-auto">
-                <Eye className="w-6 h-6" />
+            <div className="py-14 px-4 rounded-lg surface-card text-center border border-dashed border-white/[0.12] space-y-3">
+              <div className="w-10 h-10 rounded-md bg-white/[0.04] border border-white/[0.08] flex items-center justify-center text-zinc-400 mx-auto">
+                <Eye className="w-4 h-4 text-amber-400" />
               </div>
               <div>
-                <h3 className="text-base font-semibold text-white">No accessibility audits run yet</h3>
+                <h3 className="text-sm font-semibold text-white">No accessibility audits run yet</h3>
                 <p className="text-xs text-zinc-400 max-w-sm mx-auto mt-1">
-                  Click &quot;Run Test Now&quot; above to evaluate WCAG compliance on the target page using axe-core.
+                  Click &quot;Run Test&quot; above to evaluate WCAG compliance on the target page using axe-core.
                 </p>
               </div>
             </div>
           )}
 
           {/* Accessibility Config Details Card */}
-          <div className="p-6 rounded-2xl glass-panel border border-white/[0.08] space-y-4">
+          <div className="surface-card rounded-lg border border-white/[0.08] p-4 space-y-3">
             <h2 className="text-xs font-mono font-bold uppercase tracking-wider text-zinc-400">
               Configured Accessibility Scan Parameters
             </h2>
-            <div className="space-y-2 text-xs font-mono">
-              <div className="p-3 rounded-xl bg-black/40 border border-white/[0.06] flex items-center justify-between">
+            <div className="space-y-1.5 text-xs font-mono">
+              <div className="p-2.5 rounded-md bg-black/40 border border-white/[0.06] flex items-center justify-between">
                 <span className="text-zinc-400">Target URL:</span>
                 <span className="text-white break-all">{test.config.url}</span>
               </div>
-              <div className="p-3 rounded-xl bg-black/40 border border-white/[0.06] flex items-center justify-between">
+              <div className="p-2.5 rounded-md bg-black/40 border border-white/[0.06] flex items-center justify-between">
                 <span className="text-zinc-400">Scan Scope:</span>
                 <span className="text-amber-400 font-bold uppercase">{test.config.scope || "page"}</span>
               </div>
               {test.config.selector && (
-                <div className="p-3 rounded-xl bg-black/40 border border-white/[0.06] flex items-center justify-between">
+                <div className="p-2.5 rounded-md bg-black/40 border border-white/[0.06] flex items-center justify-between">
                   <span className="text-zinc-400">Selector:</span>
                   <span className="text-white">{test.config.selector}</span>
                 </div>
               )}
-              <div className="p-3 rounded-xl bg-black/40 border border-white/[0.06] flex items-center justify-between">
+              <div className="p-2.5 rounded-md bg-black/40 border border-white/[0.06] flex items-center justify-between">
                 <span className="text-zinc-400">Standards:</span>
                 <span className="text-zinc-200">
                   {Array.isArray(test.config.standards) ? test.config.standards.join(", ") : "wcag2a, wcag2aa"}
@@ -444,11 +424,11 @@ export default function TestDetailPage({
 
       {/* PERFORMANCE TEST RESULT SECTION */}
       {test.type === "PERFORMANCE" && (
-        <div className="space-y-6">
+        <div className="space-y-4">
           {perfExecutionResult ? (
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <h2 className="text-sm font-bold text-white uppercase tracking-wider font-mono">
+                <h2 className="text-xs font-bold text-zinc-300 uppercase tracking-wider font-mono">
                   Performance Audit &amp; Core Web Vitals
                 </h2>
                 <span className="text-xs font-mono text-zinc-500">
@@ -458,34 +438,34 @@ export default function TestDetailPage({
               <PerformanceResultViewer result={perfExecutionResult} />
             </div>
           ) : (
-            <div className="py-16 px-4 rounded-2xl glass-panel text-center border border-dashed border-white/[0.12] space-y-4">
-              <div className="w-12 h-12 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 mx-auto">
-                <Zap className="w-6 h-6" />
+            <div className="py-14 px-4 rounded-lg surface-card text-center border border-dashed border-white/[0.12] space-y-3">
+              <div className="w-10 h-10 rounded-md bg-white/[0.04] border border-white/[0.08] flex items-center justify-center text-zinc-400 mx-auto">
+                <Zap className="w-4 h-4 text-purple-400" />
               </div>
               <div>
-                <h3 className="text-base font-semibold text-white">No performance audits run yet</h3>
+                <h3 className="text-sm font-semibold text-white">No performance audits run yet</h3>
                 <p className="text-xs text-zinc-400 max-w-sm mx-auto mt-1">
-                  Click &quot;Run Test Now&quot; above to measure Core Web Vitals, page timings, and resource transfer in headless Chromium.
+                  Click &quot;Run Test&quot; above to measure Core Web Vitals, page timings, and resource transfer in headless Chromium.
                 </p>
               </div>
             </div>
           )}
 
           {/* Performance Config Details Card */}
-          <div className="p-6 rounded-2xl glass-panel border border-white/[0.08] space-y-4">
+          <div className="surface-card rounded-lg border border-white/[0.08] p-4 space-y-3">
             <h2 className="text-xs font-mono font-bold uppercase tracking-wider text-zinc-400">
               Configured Performance Thresholds &amp; Settings
             </h2>
-            <div className="space-y-2 text-xs font-mono">
-              <div className="p-3 rounded-xl bg-black/40 border border-white/[0.06] flex items-center justify-between">
+            <div className="space-y-1.5 text-xs font-mono">
+              <div className="p-2.5 rounded-md bg-black/40 border border-white/[0.06] flex items-center justify-between">
                 <span className="text-zinc-400">Target URL:</span>
                 <span className="text-white break-all">{test.config.url}</span>
               </div>
-              <div className="p-3 rounded-xl bg-black/40 border border-white/[0.06] flex items-center justify-between">
+              <div className="p-2.5 rounded-md bg-black/40 border border-white/[0.06] flex items-center justify-between">
                 <span className="text-zinc-400">Device Viewport:</span>
                 <span className="text-purple-400 font-bold uppercase">{test.config.device || "desktop"}</span>
               </div>
-              <div className="p-3 rounded-xl bg-black/40 border border-white/[0.06] flex items-center justify-between">
+              <div className="p-2.5 rounded-md bg-black/40 border border-white/[0.06] flex items-center justify-between">
                 <span className="text-zinc-400">Measurement Mode:</span>
                 <span className="text-zinc-200">
                   {test.config.measurementRuns > 1
@@ -494,7 +474,7 @@ export default function TestDetailPage({
                 </span>
               </div>
               {test.config.thresholds && test.config.thresholds.length > 0 && (
-                <div className="p-3 rounded-xl bg-black/40 border border-white/[0.06] space-y-1">
+                <div className="p-2.5 rounded-md bg-black/40 border border-white/[0.06] space-y-1">
                   <span className="text-[11px] text-zinc-400 block mb-1">Configured Thresholds:</span>
                   {test.config.thresholds.map((t: any, i: number) => (
                     <div key={i} className="text-zinc-300 flex items-center gap-1.5">
@@ -515,11 +495,11 @@ export default function TestDetailPage({
 
       {/* SEO TEST RESULT SECTION */}
       {test.type === "SEO" && (
-        <div className="space-y-6">
+        <div className="space-y-4">
           {seoExecutionResult ? (
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <h2 className="text-sm font-bold text-white uppercase tracking-wider font-mono">
+                <h2 className="text-xs font-bold text-zinc-300 uppercase tracking-wider font-mono">
                   Technical SEO Audit Results
                 </h2>
                 <span className="text-xs font-mono text-zinc-500">
@@ -529,36 +509,36 @@ export default function TestDetailPage({
               <SeoResultViewer result={seoExecutionResult} />
             </div>
           ) : (
-            <div className="py-16 px-4 rounded-2xl glass-panel text-center border border-dashed border-white/[0.12] space-y-4">
-              <div className="w-12 h-12 rounded-2xl bg-teal-500/10 border border-teal-500/20 flex items-center justify-center text-teal-400 mx-auto">
-                <Search className="w-6 h-6" />
+            <div className="py-14 px-4 rounded-lg surface-card text-center border border-dashed border-white/[0.12] space-y-3">
+              <div className="w-10 h-10 rounded-md bg-white/[0.04] border border-white/[0.08] flex items-center justify-center text-zinc-400 mx-auto">
+                <Search className="w-4 h-4 text-teal-400" />
               </div>
               <div>
-                <h3 className="text-base font-semibold text-white">No SEO audits run yet</h3>
+                <h3 className="text-sm font-semibold text-white">No SEO audits run yet</h3>
                 <p className="text-xs text-zinc-400 max-w-sm mx-auto mt-1">
-                  Click &quot;Run Test Now&quot; above to inspect page title, metadata, headings, canonical, robots directives, and structured data in headless Chromium.
+                  Click &quot;Run Test&quot; above to inspect page title, metadata, headings, canonical, robots directives, and structured data in headless Chromium.
                 </p>
               </div>
             </div>
           )}
 
           {/* SEO Config Details Card */}
-          <div className="p-6 rounded-2xl glass-panel border border-white/[0.08] space-y-4">
+          <div className="surface-card rounded-lg border border-white/[0.08] p-4 space-y-3">
             <h2 className="text-xs font-mono font-bold uppercase tracking-wider text-zinc-400">
               Configured SEO Scope &amp; Assertions
             </h2>
-            <div className="space-y-2 text-xs font-mono">
-              <div className="p-3 rounded-xl bg-black/40 border border-white/[0.06] flex items-center justify-between">
+            <div className="space-y-1.5 text-xs font-mono">
+              <div className="p-2.5 rounded-md bg-black/40 border border-white/[0.06] flex items-center justify-between">
                 <span className="text-zinc-400">Target URL:</span>
                 <span className="text-white break-all">{test.config.url}</span>
               </div>
-              <div className="p-3 rounded-xl bg-black/40 border border-white/[0.06] flex items-center justify-between">
+              <div className="p-2.5 rounded-md bg-black/40 border border-white/[0.06] flex items-center justify-between">
                 <span className="text-zinc-400">Expected HTTP Status:</span>
                 <span className="text-teal-400 font-bold">
                   HTTP {test.config.assertions?.expectedStatusCode ?? 200}
                 </span>
               </div>
-              <div className="p-3 rounded-xl bg-black/40 border border-white/[0.06] flex items-center justify-between">
+              <div className="p-2.5 rounded-md bg-black/40 border border-white/[0.06] flex items-center justify-between">
                 <span className="text-zinc-400">Required Assertions:</span>
                 <span className="text-zinc-300">
                   {[
@@ -580,41 +560,28 @@ export default function TestDetailPage({
       {test.type === "UI" && (
         <>
           {latestResult ? (
-            <div className="space-y-6">
+            <div className="space-y-4">
               {/* Status banner */}
               <div
-                className={`p-6 rounded-2xl glass-panel-elevated border flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 ${
+                className={`p-4 rounded-lg surface-card border flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 ${
                   isPassed
-                    ? "border-emerald-500/30 bg-emerald-950/10"
-                    : "border-rose-500/30 bg-rose-950/10"
+                    ? "border-emerald-500/25 bg-emerald-950/10"
+                    : "border-rose-500/25 bg-rose-950/10"
                 }`}
               >
-                <div className="flex items-center gap-3.5">
-                  {isPassed ? (
-                    <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
-                      <CheckCircle2 className="w-6 h-6" />
-                    </div>
-                  ) : (
-                    <div className="w-10 h-10 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center shrink-0">
-                      <XCircle className="w-6 h-6" />
-                    </div>
-                  )}
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-md bg-white/[0.04] border border-white/[0.06] shrink-0">
+                    <StatusBadge status={latestResult.status} showDotOnly size="md" />
+                  </div>
                   <div>
                     <div className="flex items-center gap-2 font-mono text-xs">
-                      <span
-                        className={`font-bold px-2 py-0.5 rounded text-[11px] ${
-                          isPassed
-                            ? "bg-emerald-500/20 text-emerald-300"
-                            : "bg-rose-500/20 text-rose-300"
-                        }`}
-                      >
-                        {latestResult.status}
-                      </span>
+                      <StatusBadge status={latestResult.status} size="sm" />
+                      <span className="text-zinc-600">•</span>
                       <span className="text-zinc-400">
                         Run #{latestResult.testRunId.slice(0, 8)}
                       </span>
                     </div>
-                    <p className="text-xs text-zinc-300 mt-1">
+                    <p className="text-xs text-zinc-300 mt-0.5">
                       {isPassed
                         ? "All assertions and execution steps verified successfully."
                         : latestResult.errorMessage || "Test assertion failed."}
@@ -622,7 +589,7 @@ export default function TestDetailPage({
                   </div>
                 </div>
 
-                <div className="flex items-center gap-4 text-xs font-mono text-zinc-400">
+                <div className="flex items-center gap-3 text-xs font-mono text-zinc-400 shrink-0">
                   <span className="flex items-center gap-1.5">
                     <Clock className="w-3.5 h-3.5 text-zinc-500" />
                     {latestResult.durationMs.toLocaleString()}ms
@@ -633,12 +600,17 @@ export default function TestDetailPage({
               </div>
 
               {/* Step Waterfall Timeline */}
-              <div className="p-6 rounded-2xl glass-panel-elevated border border-white/[0.08] space-y-4">
-                <h2 className="text-sm font-bold text-white uppercase tracking-wider font-mono">
-                  Step Execution Waterfall
-                </h2>
+              <div className="surface-card rounded-lg border border-white/[0.08] overflow-hidden">
+                <div className="px-4 py-3 border-b border-white/[0.08] flex items-center justify-between">
+                  <h2 className="text-xs font-bold text-zinc-300 uppercase tracking-wider font-mono">
+                    Step Execution Waterfall
+                  </h2>
+                  <span className="text-[11px] font-mono text-zinc-500">
+                    {latestResult.stepResults.length} steps executed
+                  </span>
+                </div>
 
-                <div className="space-y-2">
+                <div className="divide-y divide-white/[0.04]">
                   {latestResult.stepResults.map((step, idx) => {
                     const pass = step.status === "PASSED";
                     const skip = step.status === "SKIPPED";
@@ -646,26 +618,22 @@ export default function TestDetailPage({
                     return (
                       <div
                         key={step.stepId || idx}
-                        className={`p-3.5 rounded-xl border flex items-center justify-between gap-3 text-xs font-mono transition-colors ${
+                        className={`px-4 py-2.5 flex items-center justify-between gap-3 text-xs font-mono transition-colors ${
                           pass
-                            ? "bg-black/30 border-white/[0.06] text-zinc-300"
+                            ? "hover:bg-white/[0.02] text-zinc-300"
                             : skip
-                            ? "bg-zinc-900/30 border-white/[0.04] text-zinc-500 opacity-60"
-                            : "bg-rose-500/10 border-rose-500/30 text-rose-300"
+                            ? "bg-zinc-900/20 text-zinc-500 opacity-60"
+                            : "bg-rose-500/[0.06] text-rose-300"
                         }`}
                       >
                         <div className="flex items-center gap-3">
-                          <span className="w-5 text-zinc-500">{idx + 1}.</span>
-                          {pass ? (
-                            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                          ) : skip ? (
-                            <div className="w-4 h-4 rounded-full border border-zinc-600 flex items-center justify-center text-[10px] text-zinc-500">
-                              -
-                            </div>
-                          ) : (
-                            <XCircle className="w-4 h-4 text-rose-400 shrink-0" />
-                          )}
-                          <span className="font-bold uppercase tracking-wider text-brand-400">
+                          <span className="w-5 text-zinc-500 text-[11px]">{idx + 1}.</span>
+                          <span
+                            className={`inline-block w-1.5 h-1.5 rounded-full shrink-0 ${
+                              pass ? "bg-emerald-400" : skip ? "bg-zinc-600" : "bg-rose-400"
+                            }`}
+                          />
+                          <span className="font-semibold uppercase text-zinc-200">
                             {step.action}
                           </span>
                         </div>
@@ -706,38 +674,38 @@ export default function TestDetailPage({
 
               {/* Visual Evidence / Screenshots */}
               {latestResult.artifacts.length > 0 && (
-                <div className="p-6 rounded-2xl glass-panel-elevated border border-white/[0.08] space-y-4">
+                <div className="surface-card rounded-lg border border-white/[0.08] p-4 space-y-3">
                   <div className="flex items-center justify-between">
-                    <h2 className="text-sm font-bold text-white uppercase tracking-wider font-mono flex items-center gap-2">
-                      <Camera className="w-4 h-4 text-cyan-400" />
+                    <h2 className="text-xs font-bold text-zinc-300 uppercase tracking-wider font-mono flex items-center gap-1.5">
+                      <Camera className="w-3.5 h-3.5 text-zinc-400" />
                       Visual Artifacts ({latestResult.artifacts.length})
                     </h2>
                     <Link
                       href={`/dashboard/projects/${test.projectId}/runs/${latestResult.testRunId}/results/${latestResult.id}/artifacts`}
-                      className="px-3 py-1.5 rounded-lg bg-brand-500/10 hover:bg-brand-500/20 text-brand-400 border border-brand-500/30 text-xs font-mono font-semibold flex items-center gap-1.5 transition-colors"
+                      className="px-2.5 py-1 rounded-md bg-white/[0.04] hover:bg-white/[0.08] text-zinc-300 text-xs font-mono font-medium flex items-center gap-1.5 border border-white/[0.08] transition-colors"
                     >
-                      <span>Open Artifact Viewer</span>
-                      <ExternalLink className="w-3.5 h-3.5" />
+                      <span>Open Viewer</span>
+                      <ExternalLink className="w-3 h-3 text-zinc-500" />
                     </Link>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {latestResult.artifacts.map((art) => (
                       <div
                         key={art.id}
                         onClick={() => setSelectedScreenshot(art.url)}
-                        className="group relative rounded-xl overflow-hidden border border-white/[0.08] hover:border-cyan-500/40 cursor-pointer transition-all bg-black/40"
+                        className="group relative rounded-md overflow-hidden border border-white/[0.08] hover:border-white/[0.2] cursor-pointer transition-all bg-black/40"
                       >
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src={art.url}
                           alt={art.fileName}
-                          className="w-full h-44 object-cover object-top opacity-90 group-hover:opacity-100 transition-opacity"
+                          className="w-full h-40 object-cover object-top opacity-90 group-hover:opacity-100 transition-opacity"
                         />
-                        <div className="p-2.5 bg-black/80 backdrop-blur-sm flex items-center justify-between text-xs font-mono">
+                        <div className="p-2 bg-black/80 flex items-center justify-between text-xs font-mono">
                           <span className="text-zinc-300 truncate">{art.fileName}</span>
-                          <span className="text-[10px] text-cyan-400 flex items-center gap-1 group-hover:underline">
-                            View Fullscreen <ExternalLink className="w-3 h-3" />
+                          <span className="text-[10px] text-zinc-400 flex items-center gap-1 group-hover:text-white">
+                            View <ExternalLink className="w-3 h-3" />
                           </span>
                         </div>
                       </div>
@@ -748,12 +716,12 @@ export default function TestDetailPage({
 
               {/* Diagnostics: Console Errors */}
               {consoleErrors.length > 0 && (
-                <div className="p-6 rounded-2xl glass-panel border border-amber-500/25 bg-amber-950/10 space-y-3">
-                  <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-amber-400 flex items-center gap-2">
-                    <Terminal className="w-4 h-4 text-amber-400" />
+                <div className="surface-card rounded-lg border border-amber-500/25 p-4 space-y-2">
+                  <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
+                    <Terminal className="w-3.5 h-3.5 text-amber-400" />
                     Browser Console Errors ({consoleErrors.length})
                   </h3>
-                  <div className="space-y-1.5 font-mono text-xs text-amber-200/90 bg-black/50 p-3 rounded-xl border border-amber-500/20 overflow-x-auto">
+                  <div className="space-y-1 font-mono text-xs text-amber-200/90 bg-black/40 p-2.5 rounded-md border border-amber-500/20 overflow-x-auto">
                     {consoleErrors.map((err, i) => (
                       <div key={i} className="py-0.5">
                         <span className="text-rose-400">[error]</span> {err.text}
@@ -765,12 +733,12 @@ export default function TestDetailPage({
 
               {/* Diagnostics: Network Failures */}
               {networkFailures.length > 0 && (
-                <div className="p-6 rounded-2xl glass-panel border border-rose-500/25 bg-rose-950/10 space-y-3">
-                  <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-rose-400 flex items-center gap-2">
-                    <Globe className="w-4 h-4 text-rose-400" />
+                <div className="surface-card rounded-lg border border-rose-500/25 p-4 space-y-2">
+                  <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-rose-400 flex items-center gap-1.5">
+                    <Globe className="w-3.5 h-3.5 text-rose-400" />
                     Failed Network Requests Captured ({networkFailures.length})
                   </h3>
-                  <div className="space-y-1.5 font-mono text-xs text-rose-200/90 bg-black/50 p-3 rounded-xl border border-rose-500/20 overflow-x-auto">
+                  <div className="space-y-1 font-mono text-xs text-rose-200/90 bg-black/40 p-2.5 rounded-md border border-rose-500/20 overflow-x-auto">
                     {networkFailures.map((req, i) => (
                       <div key={i} className="py-0.5 flex items-center justify-between gap-4">
                         <span className="truncate">{req.method} {req.url}</span>
@@ -783,14 +751,14 @@ export default function TestDetailPage({
             </div>
           ) : (
             /* Empty Run State */
-            <div className="py-16 px-4 rounded-2xl glass-panel text-center border border-dashed border-white/[0.12] space-y-4">
-              <div className="w-12 h-12 rounded-2xl bg-white/[0.04] border border-white/[0.08] flex items-center justify-center text-zinc-400 mx-auto">
-                <Play className="w-6 h-6 text-brand-400" />
+            <div className="py-16 px-4 rounded-lg surface-card text-center border border-dashed border-white/[0.12] space-y-3">
+              <div className="w-10 h-10 rounded-md bg-white/[0.04] border border-white/[0.08] flex items-center justify-center text-zinc-400 mx-auto">
+                <Play className="w-4 h-4 text-emerald-400" />
               </div>
               <div>
-                <h3 className="text-base font-semibold text-white">No executions yet</h3>
+                <h3 className="text-sm font-semibold text-white">No executions yet</h3>
                 <p className="text-xs text-zinc-400 max-w-sm mx-auto mt-1">
-                  Click &quot;Run Test Now&quot; above to execute this test in headless Chromium and capture screenshots and assertions.
+                  Click &quot;Run Test&quot; above to execute this test in headless Chromium and capture screenshots and assertions.
                 </p>
               </div>
             </div>
@@ -798,20 +766,20 @@ export default function TestDetailPage({
 
           {/* Test Steps Spec Card */}
           {test.config.steps && (
-            <div className="p-6 rounded-2xl glass-panel border border-white/[0.08] space-y-3">
+            <div className="surface-card rounded-lg border border-white/[0.08] p-4 space-y-2.5">
               <h2 className="text-xs font-mono font-bold uppercase tracking-wider text-zinc-400">
                 Defined Steps Specification
               </h2>
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 {test.config.steps.map((st: any, i: number) => (
                   <div
                     key={st.id || i}
-                    className="p-3 rounded-xl bg-black/40 border border-white/[0.06] flex items-center justify-between text-xs font-mono"
+                    className="p-2.5 rounded-md bg-black/40 border border-white/[0.06] flex items-center justify-between text-xs font-mono"
                   >
                     <div className="flex items-center gap-2.5">
                       <span className="text-zinc-500">{i + 1}.</span>
-                      <span className="text-brand-400 font-bold uppercase">{st.action}</span>
-                      <span className="text-zinc-300">{st.target || st.value}</span>
+                      <span className="text-zinc-300 font-semibold uppercase">{st.action}</span>
+                      <span className="text-zinc-400">{st.target || st.value}</span>
                     </div>
                     {st.value && st.target && (
                       <span className="text-zinc-500">Value: &quot;{st.value}&quot;</span>
@@ -838,7 +806,7 @@ export default function TestDetailPage({
           onClick={() => setSelectedScreenshot(null)}
         >
           <div
-            className="max-w-4xl max-h-[90vh] bg-zinc-900 border border-white/[0.1] rounded-2xl overflow-hidden p-2 shadow-2xl space-y-2"
+            className="max-w-4xl max-h-[90vh] bg-[#111319] border border-white/[0.1] rounded-lg overflow-hidden p-2 shadow-2xl space-y-2"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex justify-between items-center px-3 py-1 text-xs text-zinc-400 font-mono">

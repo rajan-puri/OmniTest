@@ -9,9 +9,14 @@
   ],
   "scripts": {
     "dev": "npm run dev --workspace=@omnitest/web",
-    "build": "npm run build --workspace=@omnitest/web",
+    "build": "npm run build --workspace=@omnitest/cli && npm run build --workspace=@omnitest/web",
+    "build:cli": "npm run build --workspace=@omnitest/cli",
+    "build:web": "npm run build --workspace=@omnitest/web",
     "lint": "npm run lint --workspace=@omnitest/web",
-    "typecheck": "npm run typecheck --workspace=@omnitest/web"
+    "typecheck": "npm run typecheck --workspace=@omnitest/cli && npm run typecheck --workspace=@omnitest/web",
+    "typecheck:cli": "npm run typecheck --workspace=@omnitest/cli",
+    "typecheck:web": "npm run typecheck --workspace=@omnitest/web",
+    "omnitest": "node packages/cli/bin/omnitest.js"
   },
   "devDependencies": {
     "typescript": "^5.6.2"

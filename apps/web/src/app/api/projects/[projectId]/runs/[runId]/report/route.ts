@@ -7,7 +7,7 @@ export async function GET(
   request: Request,
   { params }: { params: { projectId: string; runId: string } }
 ) {
-  const user = await getAuthenticatedUser();
+  const user = await getAuthenticatedUser(request);
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }

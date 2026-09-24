@@ -517,6 +517,48 @@ data: {"status":"PASSED","durationMs":14250}
 }
 ```
 
+### 6.5 Batch Execute Project Tests (CLI & CI Orchestration)
+- **Method**: `POST`
+- **Path**: `/api/projects/:projectId/run`
+- **Purpose**: Batch triggers tests in a project with optional filters (`testIds`, `type`, `visual`) and targetUrl override for CLI and CI workflows.
+- **Auth**: User Session or `Authorization: Bearer <token>`
+- **Request Shape**:
+```json
+{
+  "testIds": ["tst_1e2d3c4b-5a6f-7e8d-9c0b-1a2b3c4d5e6f"],
+  "type": "UI",
+  "visual": false,
+  "environment": "staging",
+  "targetUrl": "https://staging.acme.shop"
+}
+```
+- **Response Shape (200 OK)**:
+```json
+{
+  "success": true,
+  "runId": "run_01a2b3c4-d5e6-7f8a-9b0c-1d2e3f4a5b6c",
+  "projectId": "prj_e91c7849-cfa2-4752-944a-1e7a469bbdf2",
+  "status": "PASSED",
+  "totalTests": 1,
+  "passedTests": 1,
+  "failedTests": 0,
+  "durationMs": 420,
+  "results": [
+    {
+      "id": "res_01",
+      "runId": "run_01a2b3c4-d5e6-7f8a-9b0c-1d2e3f4a5b6c",
+      "testId": "tst_1e2d3c4b-5a6f-7e8d-9c0b-1a2b3c4d5e6f",
+      "testTitle": "Guest User Can Add Item to Cart",
+      "testType": "UI",
+      "status": "PASSED",
+      "durationMs": 420,
+      "errorMessage": null,
+      "artifacts": []
+    }
+  ]
+}
+```
+
 ---
 
 ## 7. Test Results & Artifacts

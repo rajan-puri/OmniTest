@@ -1,6 +1,6 @@
 import { SignJWT, jwtVerify } from "jose";
 import bcrypt from "bcryptjs";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { db } from "./db";
 
 const JWT_SECRET = process.env.JWT_SECRET || "dev-omnitest-jwt-secret-key-32-chars-long";
@@ -40,15 +40,42 @@ export async function verifySessionToken(token: string): Promise<SessionPayload 
   }
 }
 
-export async function getCurrentSession(): Promise<SessionPayload | null> {
-  const cookieStore = cookies();
-  const sessionCookie = cookieStore.get(SESSION_COOKIE_NAME);
-  if (!sessionCookie?.value) return null;
-  return verifySessionToken(sessionCookie.value);
+export async function getCurrentSession(request?: Request): Promise<SessionPayload | null> {
+  // 1. Check explicit request parameter if provided
+  if (request) {
+    const authHeader = request.headers.get("authorization");
+    if (authHeader?.startsWith("Bearer ")) {
+      const token = authHeader.slice(7).trim();
+      const verified = await verifySessionToken(token);
+      if (verified) return verified;
+    }
+  }
+
+  // 2. Check Next.js request headers() context
+  try {
+    const headerStore = headers();
+    const authHeader = headerStore.get("authorization");
+    if (authHeader?.startsWith("Bearer ")) {
+      const token = authHeader.slice(7).trim();
+      const verified = await verifySessionToken(token);
+      if (verified) return verified;
+    }
+  } catch {}
+
+  // 3. Fall back to secure session cookie
+  try {
+    const cookieStore = cookies();
+    const sessionCookie = cookieStore.get(SESSION_COOKIE_NAME);
+    if (sessionCookie?.value) {
+      return verifySessionToken(sessionCookie.value);
+    }
+  } catch {}
+
+  return null;
 }
 
-export async function getAuthenticatedUser() {
-  const session = await getCurrentSession();
+export async function getAuthenticatedUser(request?: Request) {
+  const session = await getCurrentSession(request);
   if (!session?.userId) return null;
 
   const user = await db.user.findUnique({

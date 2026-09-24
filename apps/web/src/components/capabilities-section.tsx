@@ -88,50 +88,51 @@ export function CapabilitiesSection() {
   ];
 
   return (
-    <section id="capabilities" className="py-24 relative bg-[#08090C]">
+    <section id="capabilities" className="py-20 relative bg-[#090A0F] border-b border-white/[0.06]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <span className="text-xs font-mono font-bold tracking-wider text-brand-400 uppercase bg-brand-950/40 px-3 py-1 rounded-full border border-brand-500/20">
-            Unified Testing Capabilities
-          </span>
-          <h2 className="mt-4 text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-            Every test your application needs. <br />
-            None of the tool fragmentation.
+        <div className="text-center max-w-3xl mx-auto mb-12">
+          <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-white/[0.04] border border-white/[0.08] text-xs font-mono text-zinc-300">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+            <span>Unified Quality Suite</span>
+          </div>
+          <h2 className="mt-4 text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
+            Comprehensive testing capabilities. <br />
+            <span className="text-zinc-400">Zero tooling fragmentation.</span>
           </h2>
-          <p className="mt-4 text-base sm:text-lg text-zinc-400">
-            Why maintain 5 disparate test harnesses when OmniTest orchestrates all quality dimensions in one unified runner?
+          <p className="mt-3 text-sm sm:text-base text-zinc-400">
+            Orchestrate functional journeys, API schemas, accessibility standards, and visual regression under a single test harness.
           </p>
         </div>
 
         {/* Capabilities 8-card Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3.5">
           {capabilities.map((cap) => {
             const Icon = cap.icon;
             return (
               <div
                 key={cap.title}
-                className="p-6 rounded-2xl glass-panel border border-white/[0.08] hover:border-white/[0.18] transition-all duration-200 flex flex-col justify-between group bg-gradient-to-b from-white/[0.02] to-transparent"
+                className="surface-card rounded-lg border border-white/[0.08] hover:border-white/[0.18] p-4 flex flex-col justify-between transition-colors"
               >
                 <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="p-2.5 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white group-hover:scale-105 transition-transform">
-                      <Icon className="w-5 h-5 text-brand-400" />
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="p-2 rounded-md bg-white/[0.04] border border-white/[0.08] text-zinc-300">
+                      <Icon className="w-4 h-4 text-zinc-300" />
                     </div>
-                    <span className="text-[11px] font-mono font-medium px-2 py-0.5 rounded bg-white/[0.06] text-zinc-300 border border-white/[0.08]">
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-white/[0.04] text-zinc-400 border border-white/[0.06]">
                       {cap.badge}
                     </span>
                   </div>
 
-                  <h3 className="text-base font-bold text-white mb-2">{cap.title}</h3>
-                  <p className="text-xs text-zinc-400 leading-relaxed mb-4">
+                  <h3 className="text-sm font-bold text-white mb-1.5">{cap.title}</h3>
+                  <p className="text-xs text-zinc-400 leading-relaxed mb-3">
                     {cap.description}
                   </p>
                 </div>
 
-                <div className="pt-4 border-t border-white/[0.06] space-y-1.5">
+                <div className="pt-3 border-t border-white/[0.06] space-y-1">
                   {cap.details.map((detail) => (
                     <div key={detail} className="flex items-center gap-1.5 text-[11px] font-mono text-zinc-400">
-                      <span className="w-1.5 h-1.5 rounded-full bg-brand-400/60" />
+                      <span className="w-1 h-1 rounded-full bg-zinc-500" />
                       {detail}
                     </div>
                   ))}

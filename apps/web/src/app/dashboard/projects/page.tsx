@@ -5,12 +5,14 @@ import { db } from "@/lib/db";
 import {
   FolderGit2,
   Plus,
-  ExternalLink,
   GitBranch,
-  ArrowRight,
-  Clock,
+  ExternalLink,
+  History,
   Layers,
+  Settings,
 } from "lucide-react";
+import { PageHeader } from "@/components/ui/PageHeader";
+import { StatusBadge } from "@/components/ui/StatusBadge";
 
 export default async function ProjectsPage() {
   const user = await getAuthenticatedUser();
@@ -25,106 +27,204 @@ export default async function ProjectsPage() {
           testRuns: true,
         },
       },
+      testSuites: {
+        include: {
+          _count: {
+            select: { tests: true },
+          },
+        },
+      },
       testRuns: {
         take: 1,
         orderBy: { createdAt: "desc" },
+        select: {
+          id: true,
+          status: true,
+          durationMs: true,
+          createdAt: true,
+          environment: true,
+        },
       },
     },
     orderBy: { updatedAt: "desc" },
   });
 
   return (
-    <div className="space-y-6">
-      {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-6 border-b border-white/[0.08]">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2.5">
-            <FolderGit2 className="w-6 h-6 text-brand-400" />
-            Projects
-          </h1>
-          <p className="text-xs text-zinc-400 mt-1">
-            Manage web applications, repositories, and environment targets for {user.activeOrg.name}.
-          </p>
-        </div>
+    <div className="space-y-5">
+      <PageHeader
+        title="Projects"
+        description={`Manage web applications, repositories, and environment targets for ${user.activeOrg.name}.`}
+        breadcrumbs={[{ label: user.activeOrg.name }, { label: "Projects" }]}
+        actions={
+          <Link
+            href="/dashboard/projects/new"
+            className="px-3 py-1.5 rounded-md bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-semibold text-xs flex items-center gap-1.5 transition-colors shadow-sm"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            Create Project
+          </Link>
+        }
+      />
 
-        <Link
-          href="/dashboard/projects/new"
-          className="px-4 py-2.5 rounded-xl bg-brand-500 hover:bg-brand-400 text-zinc-950 font-bold text-xs flex items-center gap-1.5 transition-colors shadow-sm self-start sm:self-auto"
-        >
-          <Plus className="w-4 h-4" />
-          Create Project
-        </Link>
-      </div>
-
-      {/* Projects Grid or Empty State */}
       {projects.length === 0 ? (
-        <div className="py-16 px-4 rounded-2xl glass-panel text-center border border-dashed border-white/[0.12] space-y-4 max-w-2xl mx-auto my-8">
-          <div className="w-14 h-14 rounded-2xl bg-white/[0.04] border border-white/[0.08] flex items-center justify-center text-zinc-400 mx-auto">
-            <FolderGit2 className="w-7 h-7 text-brand-400" />
-          </div>
+        <div className="p-12 text-center surface-card border-dashed max-w-lg mx-auto my-8 space-y-3">
+          <FolderGit2 className="w-8 h-8 text-zinc-500 mx-auto" />
           <div>
-            <h3 className="text-base font-semibold text-white">No projects yet</h3>
-            <p className="text-xs text-zinc-400 max-w-md mx-auto mt-1">
-              Add your first repository or web application to begin orchestrating tests with Playwright, axe-core, and Lighthouse.
+            <h3 className="text-sm font-semibold text-white">No projects found</h3>
+            <p className="text-xs text-zinc-400 mt-1">
+              Add your first repository or web application target to start running tests.
             </p>
           </div>
           <Link
             href="/dashboard/projects/new"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand-500 hover:bg-brand-400 text-zinc-950 font-bold text-xs transition-colors shadow-sm"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-semibold text-xs transition-colors shadow-sm"
           >
-            <Plus className="w-4 h-4" />
-            Create Your First Project
+            <Plus className="w-3.5 h-3.5" />
+            Create Project
           </Link>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {projects.map((project) => (
-            <div
-              key={project.id}
-              className="p-5 rounded-2xl glass-panel border border-white/[0.08] hover:border-white/[0.18] transition-all flex flex-col justify-between group"
-            >
-              <div>
-                <div className="flex items-start justify-between gap-2 mb-2">
-                  <Link
-                    href={`/dashboard/projects/${project.id}`}
-                    className="text-base font-bold text-white group-hover:text-brand-400 transition-colors truncate"
-                  >
-                    {project.name}
-                  </Link>
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-white/[0.04] text-zinc-400 shrink-0 flex items-center gap-1">
-                    <GitBranch className="w-3 h-3 text-zinc-500" />
-                    {project.defaultBranch}
-                  </span>
-                </div>
+        <div className="data-table-container">
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th>Project</th>
+                <th>Target / Repo</th>
+                <th>Branch</th>
+                <th>Suites / Tests</th>
+                <th>Last Run</th>
+                <th>Status</th>
+                <th className="text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {projects.map((project) => {
+                const lastRun = project.testRuns[0];
+                const totalTests = project.testSuites.reduce(
+                  (acc, s) => acc + (s._count?.tests || 0),
+                  0
+                );
+                const lastRunTime = lastRun ? formatTimeAgo(lastRun.createdAt) : "-";
+                const lastRunDuration = lastRun?.durationMs
+                  ? `${(lastRun.durationMs / 1000).toFixed(1)}s`
+                  : "";
 
-                <p className="text-xs text-zinc-400 line-clamp-2 mb-4">
-                  {project.description || "No description configured."}
-                </p>
-
-                {project.baseUrl && (
-                  <div className="flex items-center gap-1.5 text-[11px] font-mono text-zinc-400 mb-4 truncate">
-                    <ExternalLink className="w-3 h-3 text-zinc-500 shrink-0" />
-                    <span className="truncate">{project.baseUrl}</span>
-                  </div>
-                )}
-              </div>
-
-              <div className="pt-4 border-t border-white/[0.06] flex items-center justify-between text-xs font-mono text-zinc-400">
-                <span className="flex items-center gap-1 text-zinc-500">
-                  <Layers className="w-3.5 h-3.5" />
-                  {project._count.testSuites} Suites • {project._count.testRuns} Runs
-                </span>
-                <Link
-                  href={`/dashboard/projects/${project.id}`}
-                  className="text-brand-400 hover:text-brand-300 font-semibold flex items-center gap-0.5"
-                >
-                  Open <ArrowRight className="w-3 h-3" />
-                </Link>
-              </div>
-            </div>
-          ))}
+                return (
+                  <tr key={project.id}>
+                    <td>
+                      <div>
+                        <Link
+                          href={`/dashboard/projects/${project.id}`}
+                          className="font-semibold text-white hover:text-emerald-400 transition-colors block text-xs"
+                        >
+                          {project.name}
+                        </Link>
+                        {project.description && (
+                          <span className="text-[11px] text-zinc-400 line-clamp-1 max-w-[240px]">
+                            {project.description}
+                          </span>
+                        )}
+                      </div>
+                    </td>
+                    <td>
+                      <div className="flex items-center gap-1 font-mono text-[11px] text-zinc-400 max-w-[180px] truncate">
+                        {project.baseUrl ? (
+                          <a
+                            href={project.baseUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="hover:text-zinc-200 truncate flex items-center gap-1"
+                          >
+                            <span>{project.baseUrl.replace(/^https?:\/\//, "")}</span>
+                            <ExternalLink className="w-2.5 h-2.5 shrink-0" />
+                          </a>
+                        ) : project.repositoryUrl ? (
+                          <a
+                            href={project.repositoryUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="hover:text-zinc-200 truncate flex items-center gap-1"
+                          >
+                            <span>{project.repositoryUrl.replace(/^https?:\/\/github\.com\//, "")}</span>
+                            <ExternalLink className="w-2.5 h-2.5 shrink-0" />
+                          </a>
+                        ) : (
+                          <span className="text-zinc-400">Local Environment</span>
+                        )}
+                      </div>
+                    </td>
+                    <td>
+                      <span className="inline-flex items-center gap-1 text-[11px] font-mono px-1.5 py-0.5 rounded bg-white/[0.04] text-zinc-400">
+                        <GitBranch className="w-3 h-3 text-zinc-500" />
+                        {project.defaultBranch}
+                      </span>
+                    </td>
+                    <td>
+                      <span className="font-mono text-xs text-zinc-300">
+                        {project._count.testSuites} <span className="text-zinc-400">suites</span> / {totalTests} <span className="text-zinc-400">tests</span>
+                      </span>
+                    </td>
+                    <td>
+                      {lastRun ? (
+                        <div className="text-[11px] font-mono">
+                          <span className="text-zinc-300">{lastRunTime}</span>
+                          {lastRunDuration && (
+                            <span className="text-zinc-400 ml-1.5">({lastRunDuration})</span>
+                          )}
+                        </div>
+                      ) : (
+                        <span className="text-[11px] font-mono text-zinc-400">Never</span>
+                      )}
+                    </td>
+                    <td>
+                      {lastRun ? (
+                        <StatusBadge status={lastRun.status} size="sm" />
+                      ) : (
+                        <span className="text-[11px] text-zinc-400 font-mono">Inactive</span>
+                      )}
+                    </td>
+                    <td className="text-right">
+                      <div className="inline-flex items-center gap-2">
+                        <Link
+                          href={`/dashboard/projects/${project.id}/history`}
+                          title="Execution History"
+                          className="p-1 rounded text-zinc-400 hover:text-zinc-200 hover:bg-white/[0.06] transition-colors"
+                        >
+                          <History className="w-3.5 h-3.5" />
+                        </Link>
+                        <Link
+                          href={`/dashboard/projects/${project.id}/edit`}
+                          title="Settings"
+                          className="p-1 rounded text-zinc-400 hover:text-zinc-200 hover:bg-white/[0.06] transition-colors"
+                        >
+                          <Settings className="w-3.5 h-3.5" />
+                        </Link>
+                        <Link
+                          href={`/dashboard/projects/${project.id}`}
+                          className="text-[11px] font-mono font-medium text-emerald-400 hover:text-emerald-300 ml-1"
+                        >
+                          View &rarr;
+                        </Link>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
       )}
     </div>
   );
+}
+
+function formatTimeAgo(date: Date): string {
+  const seconds = Math.floor((Date.now() - new Date(date).getTime()) / 1000);
+  if (seconds < 60) return `${seconds}s ago`;
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes}m ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  return `${days}d ago`;
 }

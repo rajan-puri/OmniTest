@@ -10,23 +10,40 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "#08090C",
+        background: "#090A0F",
         surface: {
-          50: "#181A20",
-          100: "#13151A",
-          200: "#0E1014",
-          300: "#0A0B0E",
+          DEFAULT: "#12141A",
+          50: "#181A22",
+          100: "#14161D",
+          200: "#0F1117",
+          300: "#0B0C10",
+          card: "#111319",
+          "card-hover": "#161922",
+          subtle: "#0E1015",
         },
         border: {
-          subtle: "rgba(255, 255, 255, 0.07)",
-          muted: "rgba(255, 255, 255, 0.12)",
-          accent: "rgba(16, 185, 129, 0.3)",
+          DEFAULT: "rgba(255, 255, 255, 0.08)",
+          subtle: "rgba(255, 255, 255, 0.05)",
+          muted: "rgba(255, 255, 255, 0.10)",
+          strong: "rgba(255, 255, 255, 0.16)",
+          accent: "rgba(16, 185, 129, 0.4)",
         },
         brand: {
           50: "#ecfdf5",
+          100: "#d1fae5",
+          200: "#a7f3d0",
+          300: "#6ee7b7",
           400: "#34d399",
           500: "#10b981",
           600: "#059669",
+          700: "#047857",
+        },
+        status: {
+          passed: "#10b981",
+          failed: "#f43f5e",
+          running: "#f59e0b",
+          queued: "#71717a",
+          timed_out: "#f97316",
         },
         cyan: {
           400: "#22d3ee",
@@ -35,23 +52,27 @@ const config: Config = {
         violet: {
           400: "#a78bfa",
           500: "#8b5cf6",
-        }
+        },
       },
       fontFamily: {
-        sans: ["var(--font-inter)", "system-ui", "sans-serif"],
-        mono: ["var(--font-mono)", "JetBrains Mono", "monospace"],
+        sans: ["var(--font-inter)", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "sans-serif"],
+        mono: ["var(--font-mono)", "ui-monospace", "SFMono-Regular", "Menlo", "Monaco", "monospace"],
       },
-      backgroundImage: {
-        "radial-glow": "radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.15) 0%, rgba(8, 9, 12, 0) 70%)",
-        "radial-glow-cyan": "radial-gradient(circle at 80% 20%, rgba(6, 182, 212, 0.12) 0%, rgba(8, 9, 12, 0) 60%)",
-        "radial-glow-violet": "radial-gradient(circle at 20% 80%, rgba(139, 92, 246, 0.1) 0%, rgba(8, 9, 12, 0) 60%)",
-        "grid-pattern": "linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px)",
+      boxShadow: {
+        subtle: "0 1px 2px 0 rgba(0, 0, 0, 0.35)",
+        card: "0 2px 8px -2px rgba(0, 0, 0, 0.5)",
+        dropdown: "0 10px 25px -5px rgba(0, 0, 0, 0.6), 0 8px 10px -6px rgba(0, 0, 0, 0.6)",
       },
-      animation: {
-        "pulse-subtle": "pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite",
-      }
+      borderRadius: {
+        sm: "4px",
+        DEFAULT: "6px",
+        md: "6px",
+        lg: "8px",
+        xl: "10px",
+      },
     },
   },
   plugins: [],
 };
+
 export default config;

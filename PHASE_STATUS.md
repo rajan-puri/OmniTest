@@ -15,11 +15,46 @@
 | **Phase 6B**| Artifact Viewer & Media Explorer | ✅ Complete | Unified artifact viewer, screenshots, logs, JSON, trace, video, sandboxed HTML |
 | **Phase 6C**| Visual Regression Testing | ✅ Complete | Pixelmatch diff engine, ignore regions, baseline management, 4-mode viewer, reports |
 | **Phase 6D**| Historical Trends & Flakiness Tracking | ✅ Complete | Test history timeline, SVG trends, slowdown alerts, flakiness index, run comparison |
-| **Phase 7** | Developer CLI & GitHub CI Integration | ⏳ Upcoming | Planned |
+| **Phase 7A**| CLI Foundation (`omnitest`) | ✅ Complete | Zero-bloat standalone CLI, init, run, test, history, report, status, exit codes 0-3 |
+| **Phase 7B**| GitHub Authentication | ⏳ Upcoming | Planned |
+| **Phase 7C**| GitHub Actions CI Workflow | ⏳ Upcoming | Planned |
+| **Phase 7D**| Pull Request Automated Reporting | ⏳ Upcoming | Planned |
 | **Phase 8** | AI-Assisted Diagnostics | ⏳ Upcoming | Planned |
 | **Phase 9** | Subscription Billing & Quotas | ⏳ Upcoming | Planned |
 | **Phase 10**| Enterprise Security & Scaling | ⏳ Upcoming | Planned |
 | **Phase 11**| Beta Hardening & Launch | ⏳ Upcoming | Planned |
+
+---
+
+## Detailed Status: Phase 7A — CLI Foundation
+
+- **Status**: ✅ Complete and Verified
+- **Architecture**:
+  - **Standalone Monorepo Package (`packages/cli`)**:
+    - Distributed as `@omnitest/cli` with primary executable `omnitest` (`bin/omnitest.js`).
+    - Ultra-fast native execution using Node.js built-ins (`fetch`, `fs`, `path`, `process`) with sub-50ms cold startup.
+    - Zero external dependency bloat.
+  - **Configuration Management (`config/loader.ts`)**:
+    - Multi-format file resolution (`omnitest.config.json`, `.omnitestrc.json`, `.js`, `.ts`).
+    - Precedence: CLI flags &rarr; Environment variables (`OMNITEST_PROJECT_ID`, `OMNITEST_API_URL`, `OMNITEST_TOKEN`) &rarr; Config file &rarr; Defaults.
+    - Token protection with `maskSecret` preventing token leakage in terminal logs.
+  - **Commands**:
+    - `omnitest init`: Safely generates `omnitest.config.json` with overwrite safety guard (`--force` required to overwrite).
+    - `omnitest run`: Triggers orchestrator batch execution across UI, API, Accessibility, Performance, and SEO tests with `--visual` regression filtering.
+    - `omnitest test <testId>`: Executes a single test directly by identifier with step telemetry.
+    - `omnitest history`: Queries test execution timeline and trends with formatted terminal tables or raw JSON.
+    - `omnitest report`: Fetches execution report summary, breakdown, and dashboard links.
+    - `omnitest status`: Diagnostic report on server reachability, auth status, active project, and latest execution.
+  - **Standardized CI Exit Codes**:
+    - `0`: SUCCESS (all tests passed or help displayed)
+    - `1`: TEST_FAILURE (one or more test assertions failed)
+    - `2`: CLI_ERROR / CONFIG_ERROR (invalid flags, missing project ID, unforced overwrite)
+    - `3`: API_OR_AUTH_ERROR (unauthorized, invalid bearer token, or API communication failure)
+  - **Machine-Readable `--json` Mode**:
+    - Produces clean, non-styled JSON output for CI pipelines and automated scripting.
+  - **Terminal Output Engine (`output/formatter.ts`)**:
+    - TTY detection, ANSI color palettes, banners, duration formatting, and error diagnostics.
+- **Verification**: `scripts/verify-phase7a.ts` verified with 100% pass rate. All regression suites, TypeScript typecheck, ESLint, and Next.js production build passed.
 
 ---
 

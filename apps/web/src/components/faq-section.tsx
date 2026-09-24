@@ -34,46 +34,46 @@ export function FaqSection() {
   ];
 
   return (
-    <section id="faq" className="py-24 relative bg-[#08090C] border-t border-white/[0.06]">
+    <section id="faq" className="py-20 relative bg-[#08090C] border-t border-white/[0.08]">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <span className="text-xs font-mono font-bold tracking-wider text-zinc-400 uppercase bg-white/[0.04] px-3 py-1 rounded-full border border-white/[0.08]">
+        <div className="text-center mb-14">
+          <span className="text-[11px] font-mono font-medium tracking-wider text-zinc-400 uppercase bg-white/[0.04] px-2.5 py-1 rounded border border-white/[0.08]">
             Frequently Asked Questions
           </span>
-          <h2 className="mt-4 text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-            Everything you need to know.
+          <h2 className="mt-4 text-2xl sm:text-3xl font-bold text-white tracking-tight">
+            Everything you need to know
           </h2>
-          <p className="mt-4 text-base text-zinc-400">
+          <p className="mt-3 text-sm text-zinc-400">
             Have questions about architecture, security, or migration? We’ve got answers.
           </p>
         </div>
 
         {/* Accordion list */}
-        <div className="space-y-3">
+        <div className="space-y-2.5">
           {faqs.map((faq, index) => {
             const isOpen = openIndex === index;
             return (
               <div
                 key={faq.q}
-                className="rounded-xl glass-panel border border-white/[0.08] overflow-hidden transition-colors"
+                className="rounded-lg surface-card border border-white/[0.08] overflow-hidden transition-colors"
               >
                 <button
                   type="button"
                   onClick={() => setOpenIndex(isOpen ? null : index)}
-                  className="w-full p-5 text-left flex items-center justify-between gap-4 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                  className="w-full p-4 text-left flex items-center justify-between gap-4 focus:outline-none focus:ring-1 focus:ring-emerald-500"
                   aria-expanded={isOpen}
                 >
-                  <span className="text-sm sm:text-base font-semibold text-white">
+                  <span className="text-sm font-semibold text-white">
                     {faq.q}
                   </span>
                   <ChevronDown
                     className={`w-4 h-4 text-zinc-400 transition-transform duration-200 shrink-0 ${
-                      isOpen ? "rotate-180 text-brand-400" : ""
+                      isOpen ? "rotate-180 text-emerald-400" : ""
                     }`}
                   />
                 </button>
                 {isOpen && (
-                  <div className="px-5 pb-5 pt-1 text-xs sm:text-sm text-zinc-400 leading-relaxed border-t border-white/[0.04]">
+                  <div className="px-4 pb-4 pt-1 text-xs text-zinc-400 leading-relaxed border-t border-white/[0.04]">
                     {faq.a}
                   </div>
                 )}

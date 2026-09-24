@@ -2,27 +2,22 @@ import React from "react";
 import Link from "next/link";
 import { getAuthenticatedUser } from "@/lib/auth";
 import { db } from "@/lib/db";
-import {
-  FileText,
-  CheckCircle2,
-  XCircle,
-  Clock,
-  ArrowRight,
-  FolderGit2,
-  Calendar,
-  Layers,
-  Sparkles,
-} from "lucide-react";
+import { Layers, ArrowRight, Download } from "lucide-react";
+import { PageHeader } from "@/components/ui/PageHeader";
+import { MetricCard } from "@/components/ui/MetricCard";
+import { StatusBadge } from "@/components/ui/StatusBadge";
+import { EngineBadge } from "@/components/ui/EngineBadge";
 
 export default async function ReportsDirectoryPage() {
   const user = await getAuthenticatedUser();
   if (!user || !user.activeOrg) return null;
 
-  // Fetch recent test runs with test results
+  const orgId = user.activeOrg.id;
+
   const runs = await db.testRun.findMany({
     where: {
       project: {
-        organizationId: user.activeOrg.id,
+        organizationId: orgId,
       },
     },
     include: {
@@ -44,199 +39,176 @@ export default async function ReportsDirectoryPage() {
     take: 50,
   });
 
-  // Calculate aggregated stats
   const totalReports = runs.length;
   const passedReports = runs.filter((r) => r.status === "PASSED").length;
-  const overallPassRate =
-    totalReports > 0 ? Math.round((passedReports / totalReports) * 100) : 0;
+  const failedReports = runs.filter((r) => r.status === "FAILED").length;
+  const overallPassRate = totalReports > 0 ? Math.round((passedReports / totalReports) * 100) : 0;
+
+  // Calculate average duration
+  const runsWithDuration = runs.filter((r) => typeof r.durationMs === "number" && r.durationMs > 0);
+  const avgDurationMs =
+    runsWithDuration.length > 0
+      ? Math.round(runsWithDuration.reduce((acc, r) => acc + (r.durationMs || 0), 0) / runsWithDuration.length)
+      : 0;
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-6 border-b border-white/[0.08]">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2.5">
-            <FileText className="w-6 h-6 text-brand-400" />
-            Quality &amp; Test Reports
-          </h1>
-          <p className="text-xs text-zinc-400 mt-1">
-            Aggregated test execution reports across UI, API, Accessibility, Performance, and SEO testing engines.
-          </p>
-        </div>
-
-        <Link
-          href="/dashboard/runs"
-          className="px-4 py-2 rounded-xl bg-white/[0.06] hover:bg-white/[0.1] text-zinc-200 font-semibold text-xs border border-white/[0.08] flex items-center gap-1.5 transition-colors self-start sm:self-auto"
-        >
-          <Layers className="w-4 h-4" />
-          Execution Runs Grid
-        </Link>
-      </div>
-
-      {/* Overview Stat Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        <div className="p-4 rounded-xl glass-panel border border-white/[0.08]">
-          <span className="text-[11px] font-mono text-zinc-400 uppercase tracking-wider block mb-1">
-            Generated Reports
-          </span>
-          <div className="text-2xl font-bold font-mono text-white">
-            {totalReports}
-          </div>
-        </div>
-
-        <div className="p-4 rounded-xl glass-panel border border-white/[0.08]">
-          <span className="text-[11px] font-mono text-zinc-400 uppercase tracking-wider block mb-1">
-            Passing Runs
-          </span>
-          <div className="text-2xl font-bold font-mono text-emerald-400">
-            {passedReports} <span className="text-xs text-zinc-500 font-normal">/ {totalReports}</span>
-          </div>
-        </div>
-
-        <div className="p-4 rounded-xl glass-panel border border-white/[0.08]">
-          <span className="text-[11px] font-mono text-zinc-400 uppercase tracking-wider block mb-1">
-            Run Success Rate
-          </span>
-          <div className="text-2xl font-bold font-mono text-brand-400">
-            {overallPassRate}%
-          </div>
-        </div>
-      </div>
-
-      {/* Reports Listing */}
-      {runs.length === 0 ? (
-        <div className="py-16 px-4 rounded-2xl glass-panel text-center border border-dashed border-white/[0.12] space-y-4 max-w-2xl mx-auto my-8">
-          <div className="w-14 h-14 rounded-2xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center text-brand-400 mx-auto">
-            <FileText className="w-7 h-7" />
-          </div>
-          <div>
-            <h3 className="text-base font-semibold text-white">No test reports generated yet</h3>
-            <p className="text-xs text-zinc-400 max-w-md mx-auto mt-1">
-              Test reports are automatically compiled whenever a test suite or automated test is executed.
-            </p>
-          </div>
+    <div className="space-y-5">
+      <PageHeader
+        title="Quality & Test Reports"
+        description={`Aggregated execution telemetry, pass/fail distribution, and failure diagnostics across ${user.activeOrg.name}.`}
+        breadcrumbs={[{ label: user.activeOrg.name }, { label: "Reports" }]}
+        actions={
           <Link
-            href="/dashboard/projects"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand-500 hover:bg-brand-400 text-zinc-950 font-bold text-xs transition-colors shadow-sm"
+            href="/dashboard/runs"
+            className="px-3 py-1.5 rounded-md bg-white/[0.06] hover:bg-white/[0.1] text-zinc-200 text-xs font-medium border border-white/[0.08] flex items-center gap-1.5 transition-colors"
           >
-            <FolderGit2 className="w-4 h-4" /> Go to Projects
+            <Layers className="w-3.5 h-3.5" />
+            Execution Grid
           </Link>
-        </div>
-      ) : (
-        <div className="space-y-3">
-          <h2 className="text-xs font-mono font-bold uppercase tracking-wider text-zinc-400">
-            Recent Test Reports ({runs.length})
-          </h2>
+        }
+      />
 
-          <div className="grid grid-cols-1 gap-3">
-            {runs.map((run) => {
-              const isPassed = run.status === "PASSED";
-              const totalTests = run.testResults.length;
-              const passedTests = run.testResults.filter((r) => r.status === "PASSED").length;
-              const failedTests = run.testResults.filter((r) => r.status === "FAILED" || r.status === "TIMED_OUT").length;
-              const passPct = totalTests > 0 ? Math.round((passedTests / totalTests) * 100) : 0;
+      {/* Analytical Telemetry KPIs */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <MetricCard label="Generated Reports" value={totalReports} subtext="Historical runs" />
+        <MetricCard
+          label="Pass Rate"
+          value={`${overallPassRate}%`}
+          status={overallPassRate >= 90 ? "success" : overallPassRate >= 70 ? "warning" : "error"}
+          subtext={`${passedReports} of ${totalReports} passed`}
+        />
+        <MetricCard
+          label="Failed Runs"
+          value={failedReports}
+          status={failedReports > 0 ? "error" : "success"}
+          subtext={failedReports > 0 ? "Regression alert" : "Clean state"}
+        />
+        <MetricCard
+          label="Avg Duration"
+          value={avgDurationMs ? `${(avgDurationMs / 1000).toFixed(2)}s` : "-"}
+          subtext="Per executed suite"
+        />
+      </div>
 
-              // Extract unique engine types present in this run
-              const typesPresent = Array.from(new Set(run.testResults.map((r) => r.testType)));
-
-              return (
-                <div
-                  key={run.id}
-                  className="p-4 rounded-2xl glass-panel border border-white/[0.08] hover:border-white/[0.16] transition-all flex flex-col md:flex-row md:items-center md:justify-between gap-4"
-                >
-                  <div className="flex items-start sm:items-center gap-3.5">
-                    {isPassed ? (
-                      <div className="w-9 h-9 rounded-xl bg-emerald-500/15 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5 sm:mt-0">
-                        <CheckCircle2 className="w-5 h-5" />
-                      </div>
-                    ) : (
-                      <div className="w-9 h-9 rounded-xl bg-rose-500/15 text-rose-400 flex items-center justify-center shrink-0 mt-0.5 sm:mt-0">
-                        <XCircle className="w-5 h-5" />
-                      </div>
-                    )}
-
-                    <div className="space-y-1">
-                      <div className="flex flex-wrap items-center gap-2 font-mono text-xs">
-                        <span className="font-bold text-white">
-                          Report #{run.id.slice(0, 8)}
-                        </span>
-                        <span className="text-zinc-600">•</span>
-                        <span className="text-zinc-300 font-semibold">{run.project.name}</span>
-                        {run.suite && (
-                          <>
-                            <span className="text-zinc-600">•</span>
-                            <span className="text-zinc-400">{run.suite.name}</span>
-                          </>
-                        )}
-                        <span className="text-zinc-600">•</span>
-                        <span className="text-zinc-500 flex items-center gap-1">
-                          <Calendar className="w-3 h-3 text-zinc-600" />
-                          {new Date(run.createdAt).toLocaleString(undefined, {
-                            dateStyle: "short",
-                            timeStyle: "short",
-                          })}
-                        </span>
-                      </div>
-
-                      <div className="flex flex-wrap items-center gap-2 text-[11px] font-mono text-zinc-400">
-                        <span>Target: <strong className="text-zinc-300">{run.targetUrl}</strong></span>
-                        <span className="text-zinc-600">•</span>
-                        <span>Env: <strong className="text-zinc-300">{run.environment}</strong></span>
-                        <span className="text-zinc-600">•</span>
-                        <span>Trigger: <strong className="text-zinc-300">{run.trigger}</strong></span>
-                      </div>
-
-                      {/* Engine types pill list */}
-                      {typesPresent.length > 0 && (
-                        <div className="flex flex-wrap items-center gap-1 pt-0.5">
-                          {typesPresent.map((t) => (
-                            <span
-                              key={t}
-                              className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-white/[0.05] border border-white/[0.08] text-zinc-400"
-                            >
-                              {t}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Right: Metrics & View Report Action */}
-                  <div className="flex items-center justify-between md:justify-end gap-4 shrink-0 pt-2 md:pt-0 border-t md:border-t-0 border-white/[0.06] font-mono text-xs">
-                    {run.durationMs && (
-                      <span className="text-zinc-400 flex items-center gap-1">
-                        <Clock className="w-3.5 h-3.5 text-zinc-500" />
-                        {run.durationMs}ms
-                      </span>
-                    )}
-
-                    <div className="text-right">
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-emerald-400 font-bold">{passedTests} passed</span>
-                        {failedTests > 0 && (
-                          <span className="text-rose-400 font-bold">/ {failedTests} failed</span>
-                        )}
-                      </div>
-                      <div className="text-[10px] text-zinc-500">
-                        {passPct}% pass rate ({totalTests} {totalTests === 1 ? "test" : "tests"})
-                      </div>
-                    </div>
-
-                    <Link
-                      href={`/dashboard/projects/${run.project.id}/runs/${run.id}/report`}
-                      className="px-3 py-1.5 rounded-xl bg-brand-500 hover:bg-brand-400 text-zinc-950 font-bold text-xs flex items-center gap-1.5 transition-colors shadow-sm"
-                    >
-                      <FileText className="w-3.5 h-3.5" />
-                      View Report
-                    </Link>
-                  </div>
-                </div>
-              );
-            })}
+      {/* Pass/Fail Distribution Bar */}
+      {totalReports > 0 && (
+        <div className="surface-card p-3 space-y-2">
+          <div className="flex items-center justify-between text-[11px] font-mono text-zinc-400">
+            <span>Pass / Fail Distribution</span>
+            <span>
+              {passedReports} passed ({overallPassRate}%) • {failedReports} failed ({100 - overallPassRate}%)
+            </span>
+          </div>
+          <div className="w-full h-1.5 bg-zinc-800 rounded-full overflow-hidden flex">
+            <div className="h-full bg-emerald-500" style={{ width: `${overallPassRate}%` }} />
+            <div className="h-full bg-rose-500" style={{ width: `${100 - overallPassRate}%` }} />
           </div>
         </div>
       )}
+
+      {/* Reports Table */}
+      <div className="data-table-container">
+        {runs.length === 0 ? (
+          <div className="p-8 text-center text-xs text-zinc-400 font-mono">
+            No test execution reports generated yet. Run tests to produce comprehensive quality reports.
+          </div>
+        ) : (
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th>Status</th>
+                <th>Report ID</th>
+                <th>Project</th>
+                <th>Suite / Target</th>
+                <th>Engine Coverage</th>
+                <th>Duration</th>
+                <th>Generated</th>
+                <th className="text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {runs.map((r) => {
+                const durationStr = r.durationMs ? `${(r.durationMs / 1000).toFixed(2)}s` : "-";
+                const createdAgo = formatTimeAgo(r.createdAt);
+
+                // Collect distinct test types in this run
+                const types = Array.from(new Set(r.testResults.map((res) => res.testType).filter(Boolean)));
+
+                return (
+                  <tr key={r.id}>
+                    <td>
+                      <StatusBadge status={r.status} size="sm" />
+                    </td>
+                    <td>
+                      <Link
+                        href={`/dashboard/projects/${r.project.id}/runs/${r.id}/report`}
+                        className="font-mono text-[11px] text-zinc-300 hover:text-white transition-colors"
+                      >
+                        {r.id.slice(0, 8)}
+                      </Link>
+                    </td>
+                    <td>
+                      <Link
+                        href={`/dashboard/projects/${r.project.id}`}
+                        className="text-zinc-400 hover:text-zinc-200 truncate max-w-[130px] block"
+                      >
+                        {r.project.name}
+                      </Link>
+                    </td>
+                    <td className="text-zinc-300 truncate max-w-[180px]">
+                      {r.suite?.name || "Full Regression Suite"}
+                    </td>
+                    <td>
+                      <div className="flex items-center gap-1">
+                        {types.length > 0 ? (
+                          types.map((t) => <EngineBadge key={t} type={t} size="xs" />)
+                        ) : (
+                          <span className="text-[10px] font-mono text-zinc-500">-</span>
+                        )}
+                      </div>
+                    </td>
+                    <td className="font-mono text-[11px] text-zinc-400">{durationStr}</td>
+                    <td className="font-mono text-[11px] text-zinc-400">{createdAgo}</td>
+                    <td className="text-right">
+                      <div className="inline-flex items-center gap-2">
+                        <a
+                          href={`/api/projects/${r.project.id}/runs/${r.id}/report?format=json`}
+                          title="Export JSON"
+                          className="p-1 rounded text-zinc-400 hover:text-zinc-200 hover:bg-white/[0.06] transition-colors"
+                        >
+                          <Download className="w-3 h-3" />
+                        </a>
+                        <Link
+                          href={`/dashboard/projects/${r.project.id}/runs/${r.id}/report`}
+                          className="inline-flex items-center gap-1 text-[11px] font-mono font-medium text-emerald-400 hover:text-emerald-300 transition-colors"
+                        >
+                          <span>Inspect</span>
+                          <ArrowRight className="w-3 h-3" />
+                        </Link>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        )}
+      </div>
+
+      <div className="px-1 text-[11px] font-mono text-zinc-400 flex items-center justify-between">
+        <span>Showing {runs.length} reports</span>
+      </div>
     </div>
   );
+}
+
+function formatTimeAgo(date: Date): string {
+  const seconds = Math.floor((Date.now() - new Date(date).getTime()) / 1000);
+  if (seconds < 60) return `${seconds}s ago`;
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes}m ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  return `${days}d ago`;
 }
