@@ -807,3 +807,166 @@ data: {"status":"PASSED","durationMs":14250}
   }
 }
 ```
+
+---
+
+## 10. Test History & Run Comparison
+
+### 10.1 Query Project Test History
+- **Method**: `GET`
+- **Path**: `/api/projects/:projectId/history`
+- **Purpose**: Query paginated, filterable test execution history across a project.
+- **Auth**: User Session (Organization Member)
+- **Query Parameters**:
+  - `page`: Page number (default: 1)
+  - `pageSize`: Items per page (default: 20, max: 100)
+  - `status`: Filter by status (`ALL`, `PASSED`, `FAILED`, `TIMED_OUT`)
+  - `testType`: Filter by engine type (`ALL`, `UI`, `API`, `ACCESSIBILITY`, `PERFORMANCE`, `SEO`)
+  - `dateRange`: Date range preset (`all`, `today`, `7d`, `30d`, `custom`)
+  - `startDate`, `endDate`: Custom ISO date boundaries
+  - `search`: Substring search in test title, commit hash, branch, or target URL
+  - `sortBy`: Sort property (`createdAt`, `durationMs`, `status`)
+  - `sortOrder`: `asc` or `desc`
+- **Response Shape (200 OK)**:
+```json
+{
+  "items": [
+    {
+      "id": "res_12345",
+      "runId": "run_67890",
+      "testId": "tst_abcde",
+      "testTitle": "Checkout Flow",
+      "testType": "UI",
+      "status": "PASSED",
+      "durationMs": 420,
+      "createdAt": "2026-09-24T18:00:00.000Z",
+      "hasArtifacts": true,
+      "artifactCount": 2,
+      "artifacts": [
+        {
+          "id": "art_1",
+          "type": "SCREENSHOT",
+          "fileName": "checkout_step1.png",
+          "url": "/artifacts/runs/run_67890/checkout_step1.png"
+        }
+      ],
+      "visualRegression": null
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "pageSize": 20,
+    "total": 120,
+    "totalPages": 6
+  },
+  "summary": {
+    "totalExecutions": 120,
+    "passedExecutions": 108,
+    "failedExecutions": 10,
+    "timedOutExecutions": 2,
+    "passRate": 90,
+    "avgDurationMs": 480,
+    "minDurationMs": 120,
+    "maxDurationMs": 1800
+  },
+  "trends": {
+    "passFailTrend": ["PASSED", "PASSED", "FAILED"],
+    "durationTrend": [
+      {
+        "runId": "run_67890",
+        "resultId": "res_12345",
+        "date": "2026-09-24T18:00:00.000Z",
+        "durationMs": 420,
+        "status": "PASSED"
+      }
+    ],
+    "consecutiveFailures": 0,
+    "isSlower": false,
+    "durationChangePct": -5,
+    "flakinessScore": 12
+  }
+}
+```
+
+### 10.2 Query Test-Specific History & Stability
+- **Method**: `GET`
+- **Path**: `/api/projects/:projectId/tests/:testId/history`
+- **Purpose**: Retrieve historical executions and stability metrics for a single automated test.
+- **Auth**: User Session (Organization Member)
+- **Response Shape (200 OK)**:
+```json
+{
+  "test": {
+    "id": "tst_abcde",
+    "title": "Checkout Flow",
+    "type": "UI"
+  },
+  "items": [...],
+  "pagination": {...},
+  "summary": {...},
+  "trends": {...}
+}
+```
+
+### 10.3 Compare Two Historical Test Runs
+- **Method**: `GET`
+- **Path**: `/api/projects/:projectId/runs/compare?baseRunId=:baseRunId&targetRunId=:targetRunId`
+- **Purpose**: Compare two test runs in detail to identify regressions, resolved fixes, duration variance, and visual metric shifts.
+- **Auth**: User Session (Organization Member)
+- **Response Shape (200 OK)**:
+```json
+{
+  "baseRun": {
+    "id": "run_111",
+    "status": "PASSED",
+    "durationMs": 950,
+    "totalTests": 3,
+    "passedTests": 3,
+    "failedTests": 0,
+    "createdAt": "2026-09-22T10:00:00.000Z"
+  },
+  "targetRun": {
+    "id": "run_222",
+    "status": "FAILED",
+    "durationMs": 2800,
+    "totalTests": 4,
+    "passedTests": 2,
+    "failedTests": 2,
+    "createdAt": "2026-09-24T10:00:00.000Z"
+  },
+  "durationDeltaMs": 1850,
+  "durationDeltaPct": 195,
+  "statusChanged": true,
+  "regressions": [
+    {
+      "testId": "tst_visual",
+      "title": "Hero Banner Visual Consistency",
+      "type": "UI",
+      "baseStatus": "PASSED",
+      "targetStatus": "FAILED",
+      "baseDurationMs": 500,
+      "targetDurationMs": 620,
+      "errorSummary": "Visual regression diff exceeded threshold: 2.45% > 0.10%"
+    }
+  ],
+  "fixes": [],
+  "unchanged": [],
+  "visualDiffs": [
+    {
+      "testId": "tst_visual",
+      "title": "Hero Banner Visual Consistency",
+      "baseDiffPct": 0.0,
+      "targetDiffPct": 2.45,
+      "baseStatus": "PASSED",
+      "targetStatus": "FAILED"
+    }
+  ],
+  "summary": {
+    "totalCompared": 3,
+    "regressionsCount": 1,
+    "fixesCount": 0,
+    "unchangedCount": 2,
+    "speedupPct": -195
+  }
+}
+```

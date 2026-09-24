@@ -20,6 +20,7 @@ import {
   Eye,
   Zap,
   Search,
+  History,
 } from "lucide-react";
 import { TestSpec, StepExecutionResult, ConsoleErrorRecord, NetworkFailureRecord } from "@/lib/runner/types";
 import { ApiTestSpec, ApiExecutionResult } from "@/lib/runner/api-types";
@@ -31,6 +32,7 @@ import { A11yResultViewer } from "@/components/a11y/A11yResultViewer";
 import { PerformanceResultViewer } from "@/components/performance/PerformanceResultViewer";
 import { SeoResultViewer } from "@/components/seo/SeoResultViewer";
 import { VisualRegressionCard } from "@/components/visual/VisualRegressionCard";
+import { TestDetailHistory } from "@/components/history/TestDetailHistory";
 
 interface TestDetail {
   id: string;
@@ -284,24 +286,34 @@ export default function TestDetailPage({
             </p>
           </div>
 
-          <button
-            type="button"
-            onClick={handleRunTest}
-            disabled={isRunning}
-            className="px-5 py-2.5 rounded-xl bg-brand-500 hover:bg-brand-400 text-zinc-950 font-bold text-xs flex items-center gap-2 transition-all shadow-md shadow-brand-500/20 disabled:opacity-50 self-start sm:self-auto"
-          >
-            {isRunning ? (
-              <>
-                <Loader2 className="w-4 h-4 animate-spin" />
-                Executing Test...
-              </>
-            ) : (
-              <>
-                <Play className="w-4 h-4 fill-current" />
-                Run Test Now
-              </>
-            )}
-          </button>
+          <div className="flex items-center gap-2.5 self-start sm:self-auto">
+            <Link
+              href={`/dashboard/projects/${test.projectId}/history?testId=${test.id}`}
+              className="px-4 py-2.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.1] text-zinc-300 hover:text-white font-semibold text-xs border border-white/[0.08] flex items-center gap-1.5 transition-colors font-mono"
+            >
+              <History className="w-3.5 h-3.5 text-brand-400" />
+              History
+            </Link>
+
+            <button
+              type="button"
+              onClick={handleRunTest}
+              disabled={isRunning}
+              className="px-5 py-2.5 rounded-xl bg-brand-500 hover:bg-brand-400 text-zinc-950 font-bold text-xs flex items-center gap-2 transition-all shadow-md shadow-brand-500/20 disabled:opacity-50"
+            >
+              {isRunning ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Executing Test...
+                </>
+              ) : (
+                <>
+                  <Play className="w-4 h-4 fill-current" />
+                  Run Test Now
+                </>
+              )}
+            </button>
+          </div>
         </div>
       </div>
 
@@ -811,6 +823,13 @@ export default function TestDetailPage({
           )}
         </>
       )}
+
+      {/* Test Execution History & Stability Timeline */}
+      <TestDetailHistory
+        projectId={test.projectId}
+        testId={test.id}
+        recentResults={test.recentResults}
+      />
 
       {/* Modal for full-size screenshot preview */}
       {selectedScreenshot && (

@@ -262,3 +262,18 @@ export interface TestEngineAdapter {
   - **Split Slider**: Draggable interactive divider (`⟷`) with clip-path wipe effect.
   - **Opacity Overlay**: Adjustable opacity slider (0% to 100%) to spot subtle typography and layout shifts.
 - **Reporting & Artifact Integration**: Visual metrics integrated into `TestResult.metrics.visualComparison`, `RunReport` failure diagnostics, and the universal `ArtifactViewerLayout`.
+
+### 4.15 Test History & Run Comparison Architecture
+- **Schema Indexing & Performance**:
+  - Leverages compound database indexes (`[projectId, createdAt]`, `[testId, createdAt]`, `[testRunId]`, `[status]`, `[testType]`) ensuring performant queries across tens of thousands of historical execution records without denormalization.
+- **History & Analytics Engine (`history-service.ts`)**:
+  - **Server-Side Filtering & Pagination**: Handles pagination, multi-field filtering (status, engine type, search across commits/branches/titles, date presets), and sorting directly at the database layer.
+  - **Lightweight SVG Visualizations**: Implements SVG sparklines, duration trend lines, and pass/fail distribution micro-bars without external client-side charting libraries to keep bundle sizes minimal.
+  - **Performance Regression Detection**: Compares latest execution duration against historical baseline, flagging `isSlower: true` and calculating percentage variance.
+  - **Flakiness Detection**: Computes a deterministic flakiness score (0-100) based on status flip frequencies between consecutive executions.
+- **Run Comparison Engine (`compareTestRuns`)**:
+  - Analyzes Run A vs Run B to categorize test diffs into detected regressions (passed &rarr; failed), resolved fixes (failed &rarr; passed), and unchanged tests with duration deltas.
+  - Surface visual regression diff variations across runs by consuming Phase 6C comparison metrics without duplicate comparison engines.
+- **Multi-Tenant Security Enforcement**:
+  - Validates organization and project boundaries on all history queries and prevents unauthorized cross-project comparisons server-side.
+

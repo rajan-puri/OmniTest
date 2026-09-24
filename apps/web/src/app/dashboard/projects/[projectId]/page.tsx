@@ -24,6 +24,7 @@ import {
   Eye,
   Zap,
   Search,
+  History,
 } from "lucide-react";
 
 export default async function ProjectDetailPage({
@@ -112,6 +113,14 @@ export default async function ProjectDetailPage({
           </div>
 
           <div className="flex items-center gap-3">
+            <Link
+              href={`/dashboard/projects/${project.id}/history`}
+              className="px-3.5 py-2 rounded-xl bg-white/[0.06] hover:bg-white/[0.1] text-zinc-200 font-semibold text-xs border border-white/[0.08] flex items-center gap-1.5 transition-colors font-mono"
+            >
+              <History className="w-3.5 h-3.5 text-brand-400" />
+              Test History
+            </Link>
+
             <Link
               href={`/dashboard/projects/${project.id}/tests/new`}
               className="px-4 py-2 rounded-xl bg-brand-500 hover:bg-brand-400 text-zinc-950 font-bold text-xs flex items-center gap-1.5 shadow-sm transition-colors"
@@ -346,6 +355,12 @@ export default async function ProjectDetailPage({
             <PlayCircle className="w-4 h-4 text-violet-400" />
             Recent Executions ({project.testRuns.length})
           </h2>
+          <Link
+            href={`/dashboard/projects/${project.id}/history`}
+            className="text-xs font-mono text-brand-400 hover:text-brand-300 flex items-center gap-1 hover:underline font-semibold"
+          >
+            View Full History &rarr;
+          </Link>
         </div>
 
         {project.testRuns.length === 0 ? (

@@ -14,12 +14,40 @@
 | **Phase 6A**| Unified Reporting System | ✅ Complete | Aggregated run reports across all 5 engines, JSON export, failure diagnostics |
 | **Phase 6B**| Artifact Viewer & Media Explorer | ✅ Complete | Unified artifact viewer, screenshots, logs, JSON, trace, video, sandboxed HTML |
 | **Phase 6C**| Visual Regression Testing | ✅ Complete | Pixelmatch diff engine, ignore regions, baseline management, 4-mode viewer, reports |
-| **Phase 6D**| Historical Trends & Flakiness Tracking | ⏳ Upcoming | Planned |
+| **Phase 6D**| Historical Trends & Flakiness Tracking | ✅ Complete | Test history timeline, SVG trends, slowdown alerts, flakiness index, run comparison |
 | **Phase 7** | Developer CLI & GitHub CI Integration | ⏳ Upcoming | Planned |
 | **Phase 8** | AI-Assisted Diagnostics | ⏳ Upcoming | Planned |
 | **Phase 9** | Subscription Billing & Quotas | ⏳ Upcoming | Planned |
 | **Phase 10**| Enterprise Security & Scaling | ⏳ Upcoming | Planned |
 | **Phase 11**| Beta Hardening & Launch | ⏳ Upcoming | Planned |
+
+---
+
+## Detailed Status: Phase 6D — Test History & Run History
+
+- **Status**: ✅ Complete and Verified
+- **Architecture**:
+  - **Prisma Schema Optimization**: Added compound and performance indexes (`@@index([projectId, createdAt])`, `@@index([status])`, `@@index([testRunId])`, `@@index([testId, createdAt])`, `@@index([status])`, `@@index([testType])`, `@@index([testResultId])`) enabling sub-50ms queries over large historical datasets without duplicate tables or denormalized storage.
+  - **History & Analytics Engine (`history-service.ts`)**:
+    - High-performance server-side query builder supporting multi-field filtering (status, engine test type, search by commit/branch/target/title, date ranges `today`, `7d`, `30d`, `custom`).
+    - Server-side pagination with precise total counts and page boundaries.
+    - Aggregated execution summary KPIs (total executions, pass count, fail/timeout counts, pass rate %, average/min/max duration).
+    - Lightweight, deterministic trend telemetry: chronological pass/fail micro-sequence, execution duration sparkline series, daily activity points, consecutive failure counter.
+    - Performance Regression Detection: Evaluates latest run against historical baseline, flagging `isSlower: true` with percentage variance when significant slowdowns occur.
+    - Flakiness Detection: Calculates deterministic flakiness score (0-100) based on status flip frequencies between consecutive runs.
+    - Run Comparison Engine (`compareTestRuns`): Compares Run A vs Run B identifying regressions (passed &rarr; failed), resolved fixes (failed &rarr; passed), unchanged test duration variance, and visual regression differential.
+  - **Multi-Tenant Authorization & Security**:
+    - Strict organization membership verification on all endpoints. Cross-tenant queries and cross-project run comparisons are rejected server-side.
+  - **Artifact & Visual Regression Continuity**:
+    - Seamlessly extracts and surfaces visual comparison metrics (difference %, changed pixels, visual status) and maps artifact URLs for direct inspection.
+  - **Developer-Grade UI**:
+    - Dedicated Route: `/dashboard/projects/[projectId]/history` with live search, status pills, engine selectors, date range filters, and sort options.
+    - `HistorySummaryCards`: KPI overview cards (Total Runs, Pass Rate %, Failures, Average Duration).
+    - `HistoryTrends`: Zero-dependency SVG sparklines with interactive point hover cards and stability/flakiness gauge.
+    - `HistoryTable`: High-density responsive data table linking to Run Reports, Artifact Viewer, Visual Comparison, and Test Details.
+    - `RunComparisonView`: Side-by-side run regression and performance variance inspector.
+    - `TestDetailHistory`: Integrated history section on `/dashboard/tests/[testId]` showing recent executions, stability metrics, and slowdown alerts.
+- **Verification**: `scripts/verify-phase6d.ts` verified 100% pass rate. All 10 regression suites (`verify-phase3.ts` through `verify-phase6d.ts`), TypeScript checks, ESLint, and Next.js production build passed.
 
 ---
 

@@ -421,8 +421,52 @@ Visual Diff GitHub App   Diagnostics Subscriptions Scale      Public Launch
 
 ---
 
-## Phase 6D: Historical Trends & Flakiness Tracking [UPCOMING]
-- **Objective**: Long-term test stability tracking, flakiness index, duration trends over time, and degradation alerts.
+## Phase 6D: Historical Trends & Flakiness Tracking [COMPLETED]
+- **Objective**: Deliver a comprehensive test and run execution history system enabling developers to understand how tests and projects behave over time, analyze execution durations, spot performance regressions, monitor flakiness indices, and compare runs side by side.
+- **Scope**:
+  - Reused existing `TestRun`, `TestResult`, `Artifact`, `Test`, and `Project` Prisma models without creating redundant tables or duplicate data stores.
+  - Added database indexes (`@@index([projectId, createdAt])`, `@@index([status])`, `@@index([testRunId])`, `@@index([testId, createdAt])`, `@@index([status])`, `@@index([testType])`, `@@index([testResultId])`) for fast history querying.
+  - Dedicated History Query & Analytics Engine (`history-service.ts`):
+    - Server-side multi-field filtering: search (title, commit, branch, target), status, engine type, date ranges (`today`, `7d`, `30d`, `custom`), sorting (`newest`, `oldest`, `duration`, `status`).
+    - Server-side pagination with exact total counts and page limits.
+    - Aggregated KPIs: total executions, pass count, fail/timeout counts, pass rate %, average/min/max durations.
+    - Lightweight, zero-dependency SVG visualizations: duration sparkline with average baseline, hover cards, pass/fail sequence micro-blocks, and activity timeline.
+    - Performance Regression Detection: Evaluates latest run against historical baseline, flagging `isSlower: true` with percentage variance when significant slowdowns occur.
+    - Flakiness Detection: Calculates deterministic flakiness score (0-100) based on status flip frequencies between consecutive runs.
+    - Run Comparison Engine (`compareTestRuns`): Compares Run A vs Run B identifying regressions (passed &rarr; failed), resolved fixes (failed &rarr; passed), unchanged test duration variance, and visual regression differential.
+  - Multi-Tenant Authorization & Security: Strict organization membership verification on all endpoints. Cross-tenant queries and cross-project run comparisons are rejected server-side.
+  - Artifact & Visual Regression Continuity: Seamlessly extracts and surfaces visual comparison metrics (difference %, changed pixels, visual status) and maps artifact URLs for direct inspection.
+  - Developer-Grade UI:
+    - Dedicated Route: `/dashboard/projects/[projectId]/history` with live search, status pills, engine selectors, date range filters, and sort options.
+    - `HistorySummaryCards`: KPI overview cards (Total Runs, Pass Rate %, Failures, Average Duration).
+    - `HistoryTrends`: Zero-dependency SVG sparklines with interactive point hover cards and stability/flakiness gauge.
+    - `HistoryTable`: High-density responsive data table linking to Run Reports, Artifact Viewer, Visual Comparison, and Test Details.
+    - `RunComparisonView`: Side-by-side run regression and performance variance inspector.
+    - `TestDetailHistory`: Integrated history section on `/dashboard/tests/[testId]` showing recent executions, stability metrics, and slowdown alerts.
+- **Deliverables**:
+  - `apps/web/src/lib/history/` (`history-types.ts`, `history-service.ts`).
+  - `apps/web/src/components/history/` (`HistorySummaryCards.tsx`, `HistoryTrends.tsx`, `HistoryFilters.tsx`, `HistoryTable.tsx`, `RunComparisonView.tsx`, `TestHistoryViewer.tsx`, `TestDetailHistory.tsx`).
+  - `apps/web/src/app/api/projects/[projectId]/history/route.ts`.
+  - `apps/web/src/app/api/projects/[projectId]/tests/[testId]/history/route.ts`.
+  - `apps/web/src/app/api/projects/[projectId]/runs/compare/route.ts`.
+  - `apps/web/src/app/dashboard/projects/[projectId]/history/page.tsx`.
+  - Upgraded `/dashboard/projects/[projectId]/page.tsx` and `/dashboard/tests/[testId]/page.tsx`.
+  - Automated acceptance test script (`scripts/verify-phase6d.ts`).
+- **Dependencies**: Phase 6A, Phase 6B, Phase 6C.
+- **Status**: Completed and verified.
+- **Acceptance Criteria**:
+  1. Test history queried deterministically from existing models with optimized indexing. (PASSED)
+  2. Server-side pagination isolates records across pages with exact total counts. (PASSED)
+  3. Status, test type, search, and date range filters operate server-side. (PASSED)
+  4. Sorting by duration and date strictly orders results. (PASSED)
+  5. Test-specific history accurately computes pass/fail sequence and consecutive failures. (PASSED)
+  6. Performance slowdown detection accurately compares latest run against baseline and flags regressions. (PASSED)
+  7. Deterministic flakiness score calculates status flip frequency without synthetic data. (PASSED)
+  8. Artifact references, counts, and URLs correctly mapped into history items. (PASSED)
+  9. Visual regression metrics (diff %, changed pixels, status) surfaced in history entries. (PASSED)
+  10. Run comparison engine identifies test regressions, resolved fixes, and visual metric deltas. (PASSED)
+  11. Multi-tenant project isolation strictly enforced across all history queries and comparisons. (PASSED)
+  12. Typecheck, ESLint, Next.js build, and all 10 verification test suites pass with 0 errors. (PASSED)
 
 ---
 

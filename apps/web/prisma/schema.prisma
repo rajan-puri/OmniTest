@@ -128,6 +128,8 @@ model TestRun {
   testResults          TestResult[]
   artifacts            Artifact[]
 
+  @@index([projectId, createdAt])
+  @@index([status])
   @@map("test_runs")
 }
 
@@ -149,6 +151,10 @@ model TestResult {
   test         Test?      @relation(fields: [testId], references: [id], onDelete: SetNull)
   artifacts    Artifact[]
 
+  @@index([testRunId])
+  @@index([testId, createdAt])
+  @@index([status])
+  @@index([testType])
   @@map("test_results")
 }
 
@@ -167,6 +173,8 @@ model Artifact {
   testRun      TestRun     @relation(fields: [testRunId], references: [id], onDelete: Cascade)
   testResult   TestResult? @relation(fields: [testResultId], references: [id], onDelete: Cascade)
 
+  @@index([testRunId])
+  @@index([testResultId])
   @@map("artifacts")
 }
 
