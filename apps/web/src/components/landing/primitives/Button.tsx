@@ -58,25 +58,25 @@ export const Button: React.FC<ButtonProps> = ({
 
   const variantStyles = {
     primary:
-      "bg-[#00E58F] text-[#0E0D0B] font-semibold hover:bg-[#05F096] border border-[#00E58F] shadow-none",
+      "bg-[#0E9F6E] text-white font-semibold hover:bg-[#0B855C] border border-[#0E9F6E] shadow-none",
     secondary:
-      "bg-[#161512] text-[#F5F3EE] hover:bg-[#1D1B17] border border-white/[0.12] hover:border-white/[0.22]",
+      "bg-white text-[#0E1719] font-medium hover:bg-[#F3F4F1] border border-[#E4E6E3]",
     outline:
-      "bg-transparent text-[#F5F3EE] hover:bg-white/[0.04] border border-white/[0.16] hover:border-white/[0.32]",
+      "bg-transparent text-[#0E1719] font-medium hover:bg-[#0E1719]/[0.04] border border-[#E4E6E3] hover:border-[#0E1719]/30",
     dark:
-      "bg-[#0E0D0B] text-[#F5F3EE] hover:bg-[#161512] border border-white/[0.16] hover:border-white/[0.28]",
+      "bg-[#0F1B1D] text-white font-medium hover:bg-[#16262A] border border-[#0F1B1D]",
     ghost:
-      "bg-transparent text-[#A29E94] hover:text-[#F5F3EE] hover:bg-white/[0.04] border border-transparent",
+      "bg-transparent text-[#5B6668] hover:text-[#0E1719] hover:bg-[#0E1719]/[0.04] border border-transparent",
   }[variant];
 
   const sizeStyles = {
     sm: "h-[38px] min-h-[38px] px-3.5 text-[13px] gap-2",
     md: "h-[46px] min-h-[44px] px-5 text-[14px] gap-2.5",
-    lg: "h-[54px] min-h-[48px] px-7 text-[16px] gap-3 font-medium",
+    lg: "h-[50px] min-h-[44px] px-6 text-[15px] gap-2.5 font-semibold",
   }[size];
 
   const baseStyles =
-    "inline-flex items-center justify-center rounded-[6px] tracking-tight transition-all duration-150 select-none cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00E58F] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0E0D0B] active:scale-[0.98]";
+    "inline-flex items-center justify-center rounded-[4px] tracking-tight transition-all duration-150 select-none cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0E9F6E] focus-visible:ring-offset-2 focus-visible:ring-offset-white active:scale-[0.98]";
 
   const transformStyle =
     magnetic && !isTouch && !reducedMotion

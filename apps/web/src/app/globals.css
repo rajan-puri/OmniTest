@@ -3,68 +3,48 @@
 @tailwind utilities;
 
 :root {
-  /* Precision Instrument Tokens */
-  --bg-canvas: #0E0D0B;
-  --bg-surface: #161512;
-  --bg-surface-2: #1D1B17;
-  --bg-surface-subtle: #12110E;
+  /* Editorial SaaS Tokens */
+  --paper: #FBFAF7;
+  --ink: #0E1719;
+  --muted: #5B6668;
+  --border: #E4E6E3;
+  --border-dark: rgba(255, 255, 255, 0.1);
 
-  /* Hairline 1px borders */
-  --border-subtle: rgba(255, 255, 255, 0.08);
-  --border-strong: rgba(255, 255, 255, 0.16);
+  --dark: #0F1B1D;
+  --dark-surface: #16262A;
+  --dark-subtle: #122023;
 
-  /* Bold accent mint */
-  --accent-mint: #00E58F;
-  --accent-mint-subtle: rgba(0, 229, 143, 0.12);
-
-  /* Semantic status */
-  --status-fail: #F43F5E;
-  --status-warn: #F59E0B;
-  --status-info: #38BDF8;
-
-  /* Typography */
-  --text-primary: #F5F3EE;
-  --text-secondary: #A29E94;
-  --text-tertiary: #6B675E;
+  --brand: #0E9F6E;
+  --brand-hover: #0B855C;
+  --eyebrow: #2BB5A6;
+  --path: #FF5A1F;
+  --fail: #E5484D;
+  --palemint: #EAF6F1;
 
   /* Fonts */
-  --font-sans: var(--font-bricolage), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-sans: var(--font-plus-jakarta), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-mono: var(--font-jetbrains-mono), "JetBrains Mono", ui-monospace, monospace;
-}
-
-/* Light theme stage (Visual regression) */
-.theme-light-stage {
-  --bg-canvas: #F1EFE8;
-  --bg-surface: #E8E5DD;
-  --bg-surface-2: #DEDAD0;
-  --border-subtle: rgba(20, 19, 15, 0.12);
-  --border-strong: rgba(20, 19, 15, 0.22);
-  --text-primary: #14130F;
-  --text-secondary: #5C584E;
-  --text-tertiary: #878275;
 }
 
 @layer base {
   * {
-    border-color: rgba(255, 255, 255, 0.08);
+    border-color: #E4E6E3;
   }
   
   html {
-    color-scheme: dark;
     scroll-behavior: smooth;
   }
 
   body {
-    background-color: #0E0D0B;
-    color: #F5F3EE;
+    background-color: #FBFAF7;
+    color: #0E1719;
     font-family: var(--font-sans);
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
 
-  /* Tabular figures for telemetry & numerals */
+  /* Tabular figures for numerals & metrics */
   .tabular-nums {
     font-variant-numeric: tabular-nums;
   }
@@ -76,26 +56,28 @@
   }
 }
 
-/* Blueprint grid background */
-.blueprint-grid {
+/* Subtle Paper Texture Grid */
+.paper-grid {
   background-image: 
-    linear-gradient(to right, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+    linear-gradient(to right, rgba(14, 23, 25, 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(14, 23, 25, 0.035) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+/* Dark Section Perspective Floor Grid */
+.dark-grid {
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
   background-size: 32px 32px;
 }
 
-.blueprint-grid-dense {
+/* Pixel Mosaic Pattern for Capability Cards */
+.mosaic-grid {
   background-image: 
-    linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+    linear-gradient(to right, rgba(14, 23, 25, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(14, 23, 25, 0.04) 1px, transparent 1px);
   background-size: 16px 16px;
-}
-
-.blueprint-grid-light {
-  background-image: 
-    linear-gradient(to right, rgba(20, 19, 15, 0.04) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(20, 19, 15, 0.04) 1px, transparent 1px);
-  background-size: 32px 32px;
 }
 
 ::selection {

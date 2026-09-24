@@ -22,7 +22,7 @@ export const Container: React.FC<ContainerProps> = ({
 
   return (
     <div
-      className={`w-full max-w-[1280px] mx-auto px-[clamp(20px,5vw,64px)] ${className}`}
+      className={`w-full max-w-[1240px] mx-auto px-[clamp(20px,5vw,56px)] ${className}`}
       {...props}
     >
       {children}

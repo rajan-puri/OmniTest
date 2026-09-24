@@ -1,10 +1,10 @@
 import type { Metadata, Viewport } from "next";
-import { Bricolage_Grotesque, JetBrains_Mono } from "next/font/google";
+import { Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
-const bricolage = Bricolage_Grotesque({
+const plusJakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
-  variable: "--font-bricolage",
+  variable: "--font-plus-jakarta",
   display: "swap",
 });
 
@@ -69,9 +69,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`dark scroll-smooth ${bricolage.variable} ${jetbrainsMono.variable}`}>
-      <body className="min-h-screen bg-[#0E0D0B] text-[#F5F3EE] antialiased selection:bg-[#00E58F]/20 selection:text-[#00E58F]">
-        <div className="relative min-h-screen flex flex-col bg-[#0E0D0B]">
+    <html lang="en" className={`scroll-smooth ${plusJakarta.variable} ${jetbrainsMono.variable}`}>
+      <body className="min-h-screen bg-[#FBFAF7] text-[#0E1719] antialiased selection:bg-[#0E9F6E]/20 selection:text-[#0E9F6E]">
+        <div className="relative min-h-screen flex flex-col bg-[#FBFAF7]">
           {children}
         </div>
       </body>

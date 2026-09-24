@@ -1,57 +1,57 @@
 import React from "react";
 import { SmoothScrollProvider } from "@/components/landing/SmoothScrollProvider";
-import { PrecisionNav } from "@/components/landing/PrecisionNav";
+import { EditorialNav } from "@/components/landing/EditorialNav";
 import { ProgressRail } from "@/components/landing/ProgressRail";
-import { PrecisionHero } from "@/components/landing/sections/PrecisionHero";
-import { PrecisionProblem } from "@/components/landing/sections/PrecisionProblem";
-import { PrecisionHowItWorks } from "@/components/landing/sections/PrecisionHowItWorks";
-import { PrecisionVisualDiff } from "@/components/landing/sections/PrecisionVisualDiff";
-import { PrecisionBento } from "@/components/landing/sections/PrecisionBento";
-import { PrecisionDevWorkflow } from "@/components/landing/sections/PrecisionDevWorkflow";
-import { PrecisionDashboard } from "@/components/landing/sections/PrecisionDashboard";
-import { PrecisionPricing } from "@/components/landing/sections/PrecisionPricing";
-import { PrecisionFaq } from "@/components/landing/sections/PrecisionFaq";
-import { PrecisionFinalCta } from "@/components/landing/sections/PrecisionFinalCta";
+import { EditorialHero } from "@/components/landing/sections/EditorialHero";
+import { ActionIntroSection } from "@/components/landing/sections/ActionIntroSection";
+import { ThreeChaptersSection } from "@/components/landing/sections/ThreeChaptersSection";
+import { FeatureRowsSection } from "@/components/landing/sections/FeatureRowsSection";
+import { CapabilityCardsSection } from "@/components/landing/sections/CapabilityCardsSection";
+import { EditorialDashboardSection } from "@/components/landing/sections/EditorialDashboardSection";
+import { ResultsCarouselSection } from "@/components/landing/sections/ResultsCarouselSection";
+import { EditorialPricingSection } from "@/components/landing/sections/EditorialPricingSection";
+import { EditorialFaqSection } from "@/components/landing/sections/EditorialFaqSection";
+import { EditorialFooterSection } from "@/components/landing/sections/EditorialFooterSection";
 
 export default function HomePage() {
   return (
     <SmoothScrollProvider>
-      {/* 5-Step Fixed Telemetry Progress Rail (Top Bar < 768px / Fixed Rail >= 768px) */}
+      {/* 5-Step Pipeline Progress Rail (Mobile top bar / Desktop side rail) */}
       <ProgressRail />
 
-      {/* Navigation Header */}
-      <PrecisionNav />
+      {/* 1. Announcement Bar & Sticky Navigation */}
+      <EditorialNav />
 
       <main className="flex-1 w-full overflow-hidden">
-        {/* Section 01: Hero (100vh, bleeding browser mockup, live cursor & locators, marquee) */}
-        <PrecisionHero />
+        {/* 2. Hero: Warm paper bg, 8-word headline, SVG isometric test grid, marquee */}
+        <EditorialHero />
 
-        {/* Section 02: Problem ("5 tools. 5 configs. 5 dashboards." SVG convergence to "1 run.") */}
-        <PrecisionProblem />
+        {/* 3. "See a test run in action": Perspective floor grid, orange path line, word cycle */}
+        <ActionIntroSection />
 
-        {/* Section 03: How It Works (Desktop Pinned 01/02/03, Mobile Stacked Blocks) */}
-        <PrecisionHowItWorks />
+        {/* 4. Three Chapters: Ghost numerals 01/02/03, expanding list, persistent transforming SVG diagram */}
+        <ThreeChaptersSection />
 
-        {/* Section 04: Visual Regression (Light Theme #F1EFE8 Full-Bleed 90vw Stage with Redline Highlights) */}
-        <PrecisionVisualDiff />
+        {/* 5. Feature Rows: 3 alternating rows (diff slider, a11y scan, API contract) + emerald recorder banner */}
+        <FeatureRowsSection />
 
-        {/* Section 05: Capabilities Bento (12-Col Unequal Grid: 7/5, 4/4/4, 5/7) */}
-        <PrecisionBento />
+        {/* 6. Capability Cards: Pastel-gradient mosaic cards, ready to use tag, explore buttons */}
+        <CapabilityCardsSection />
 
-        {/* Section 06: Developer Workflow (Accent Mint #00E58F Section: Terminal <-> GitHub PR) */}
-        <PrecisionDevWorkflow />
+        {/* 7. Dashboard: Full app window scaling in on scroll, live counters, trace scrubber */}
+        <EditorialDashboardSection />
 
-        {/* Section 07: Observability Dashboard (Full Container 3D Tilt App Window) */}
-        <PrecisionDashboard />
+        {/* 8. Results Carousel: Case study cards, 2 big stats separated by hairlines, 01-07 indicator */}
+        <ResultsCarouselSection />
 
-        {/* Section 08: Pricing (Comparison Table with Team Pro Mint Outline & Annual Toggle) */}
-        <PrecisionPricing />
+        {/* 9. Pricing: 3 columns, Team Pro brand outline, monthly/annual toggle */}
+        <EditorialPricingSection />
 
-        {/* Section 09: FAQ (Two-Column with Sticky Heading & Large-Type Accordion) */}
-        <PrecisionFaq />
+        {/* 10. FAQ: Two-column, sticky heading left, large-type accordion right */}
+        <EditorialFaqSection />
 
-        {/* Section 10: Final CTA (Full-Bleed Giant Headline, Typing Assertion, Slim Footer) */}
-        <PrecisionFinalCta />
+        {/* 11 & 12. "Ready to start?" Pale mint CTA + 5-column footer with giant cropped wordmark */}
+        <EditorialFooterSection />
       </main>
     </SmoothScrollProvider>
   );
