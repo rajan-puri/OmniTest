@@ -1,0 +1,221 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id              String       @id @default(uuid())
+  email           String       @unique
+  passwordHash    String?
+  fullName        String
+  avatarUrl       String?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  memberships     Member[]
+
+  @@map("users")
+}
+
+model Organization {
+  id           String        @id @default(uuid())
+  name         String
+  slug         String        @unique
+  logoUrl      String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  members      Member[]
+  projects     Project[]
+  subscription Subscription?
+  usageRecords UsageRecord[]
+  integrations Integration[]
+
+  @@map("organizations")
+}
+
+model Member {
+  id             String       @id @default(uuid())
+  organizationId String
+  userId         String
+  role           String       @default("MEMBER") // OWNER, ADMIN, MEMBER
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, userId])
+  @@map("members")
+}
+
+model Project {
+  id               String       @id @default(uuid())
+  organizationId   String
+  name             String
+  slug             String
+  description      String?
+  repositoryUrl    String?
+  defaultBranch    String       @default("main")
+  baseUrl          String?
+  encryptedEnvVars String?
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+  organization     Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  testSuites       TestSuite[]
+  testRuns         TestRun[]
+
+  @@unique([organizationId, slug])
+  @@map("projects")
+}
+
+model TestSuite {
+  id          String    @id @default(uuid())
+  projectId   String
+  name        String
+  description String?
+  tags        String    @default("[]") // JSON stringified array of tags
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  project     Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  tests       Test[]
+  testRuns    TestRun[]
+
+  @@map("test_suites")
+}
+
+model Test {
+  id             String       @id @default(uuid())
+  suiteId        String
+  title          String
+  description    String?
+  type           String       @default("UI") // UI, API, ACCESSIBILITY, PERFORMANCE
+  config         String       @default("{}") // JSON stringified test config
+  timeoutSeconds Int          @default(60)
+  isActive       Boolean      @default(true)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  suite          TestSuite    @relation(fields: [suiteId], references: [id], onDelete: Cascade)
+  testResults    TestResult[]
+
+  @@map("tests")
+}
+
+model TestRun {
+  id                   String       @id @default(uuid())
+  projectId            String
+  suiteId              String?
+  status               String       @default("QUEUED") // QUEUED, RUNNING, PASSED, FAILED, TIMED_OUT, CANCELLED
+  trigger              String       @default("MANUAL") // MANUAL, CLI, WEBHOOK_GITHUB, CRON_SCHEDULE, API
+  environment          String       @default("staging")
+  targetUrl            String
+  gitCommitHash        String?
+  gitBranch            String?
+  gitCommitMessage     String?
+  gitPullRequestNumber Int?
+  totalTests           Int          @default(0)
+  passedTests          Int          @default(0)
+  failedTests          Int          @default(0)
+  skippedTests         Int          @default(0)
+  durationMs           Int?
+  startedAt            DateTime?
+  completedAt          DateTime?
+  errorSummary         String?
+  createdAt            DateTime     @default(now())
+  project              Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  suite                TestSuite?   @relation(fields: [suiteId], references: [id], onDelete: SetNull)
+  testResults          TestResult[]
+  artifacts            Artifact[]
+
+  @@map("test_runs")
+}
+
+model TestResult {
+  id           String     @id @default(uuid())
+  testRunId    String
+  testId       String?
+  testTitle    String
+  testType     String
+  status       String
+  browser      String?
+  durationMs   Int
+  errorMessage String?
+  stackTrace   String?
+  stepResults  String     @default("[]") // JSON stringified step results
+  metrics      String?    @default("{}") // JSON stringified metrics
+  createdAt    DateTime   @default(now())
+  testRun      TestRun    @relation(fields: [testRunId], references: [id], onDelete: Cascade)
+  test         Test?      @relation(fields: [testId], references: [id], onDelete: SetNull)
+  artifacts    Artifact[]
+
+  @@map("test_results")
+}
+
+model Artifact {
+  id           String      @id @default(uuid())
+  testRunId    String
+  testResultId String?
+  type         String // VIDEO, PLAYWRIGHT_TRACE, SCREENSHOT, LOG_STDOUT, LOG_HAR
+  fileName     String
+  s3Key        String
+  s3Bucket     String
+  contentType  String
+  sizeBytes    BigInt
+  expiresAt    DateTime
+  createdAt    DateTime    @default(now())
+  testRun      TestRun     @relation(fields: [testRunId], references: [id], onDelete: Cascade)
+  testResult   TestResult? @relation(fields: [testResultId], references: [id], onDelete: Cascade)
+
+  @@map("artifacts")
+}
+
+model Integration {
+  id                   String       @id @default(uuid())
+  organizationId       String
+  provider             String // GITHUB, SLACK, DATADOG
+  externalAccountId    String
+  encryptedAccessToken String
+  config               String?      @default("{}")
+  isActive             Boolean      @default(true)
+  createdAt            DateTime     @default(now())
+  updatedAt            DateTime     @updatedAt
+  organization         Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, provider, externalAccountId])
+  @@map("integrations")
+}
+
+model Subscription {
+  id                      String       @id @default(uuid())
+  organizationId          String       @unique
+  stripeCustomerId        String       @unique
+  stripeSubscriptionId    String?      @unique
+  plan                    String       @default("FREE") // FREE, PRO, ENTERPRISE
+  status                  String       @default("ACTIVE") // TRIALING, ACTIVE, PAST_DUE, CANCELED
+  concurrencyLimit        Int          @default(1)
+  monthlyTestMinutesQuota Int          @default(300)
+  currentPeriodStart      DateTime?
+  currentPeriodEnd        DateTime?
+  createdAt               DateTime     @default(now())
+  updatedAt               DateTime     @updatedAt
+  organization            Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@map("subscriptions")
+}
+
+model UsageRecord {
+  id                   String       @id @default(uuid())
+  organizationId       String
+  billingPeriodStart   DateTime
+  billingPeriodEnd     DateTime
+  testRunsCount        Int          @default(0)
+  testExecutionMinutes Int          @default(0)
+  peakConcurrencySlots Int          @default(0)
+  createdAt            DateTime     @default(now())
+  updatedAt            DateTime     @updatedAt
+  organization         Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, billingPeriodStart])
+  @@map("usage_records")
+}

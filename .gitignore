@@ -1,0 +1,29 @@
+# Dependencies
+node_modules
+.pnpm-store
+
+# Environment variables
+.env
+.env*.local
+.env.production
+
+# Build outputs
+dist
+build
+.next
+out
+.turbo
+
+# Test outputs and caches
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+
+# OS and Editor files
+.DS_Store
+*.pem
+*.log
+.idea
+.vscode
+*.swp
