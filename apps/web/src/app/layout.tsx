@@ -1,10 +1,10 @@
 import type { Metadata, Viewport } from "next";
-import { Space_Grotesk, JetBrains_Mono } from "next/font/google";
+import { Bricolage_Grotesque, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
-const spaceGrotesk = Space_Grotesk({
+const bricolage = Bricolage_Grotesque({
   subsets: ["latin"],
-  variable: "--font-space-grotesk",
+  variable: "--font-bricolage",
   display: "swap",
 });
 
@@ -69,8 +69,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`dark scroll-smooth ${spaceGrotesk.variable} ${jetbrainsMono.variable}`}>
-      <body className="min-h-screen bg-[#0E0D0B] text-[#ECEAE5] antialiased selection:bg-[#00F090]/20 selection:text-[#00F090]">
+    <html lang="en" className={`dark scroll-smooth ${bricolage.variable} ${jetbrainsMono.variable}`}>
+      <body className="min-h-screen bg-[#0E0D0B] text-[#F5F3EE] antialiased selection:bg-[#00E58F]/20 selection:text-[#00E58F]">
         <div className="relative min-h-screen flex flex-col bg-[#0E0D0B]">
           {children}
         </div>

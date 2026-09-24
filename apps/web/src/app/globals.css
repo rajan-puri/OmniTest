@@ -3,46 +3,45 @@
 @tailwind utilities;
 
 :root {
-  /* Warm off-black palette */
+  /* Precision Instrument Tokens */
   --bg-canvas: #0E0D0B;
   --bg-surface: #161512;
-  --bg-surface-elevated: #1D1B17;
-  --bg-subtle: #24221C;
+  --bg-surface-2: #1D1B17;
+  --bg-surface-subtle: #12110E;
 
-  /* Borders */
+  /* Hairline 1px borders */
   --border-subtle: rgba(255, 255, 255, 0.08);
   --border-strong: rgba(255, 255, 255, 0.16);
 
-  /* Single bold accent */
-  --accent-primary: #00E58F;
-  --accent-muted: rgba(0, 229, 143, 0.12);
+  /* Bold accent mint */
+  --accent-mint: #00E58F;
+  --accent-mint-subtle: rgba(0, 229, 143, 0.12);
 
-  /* Semantic tokens */
+  /* Semantic status */
   --status-fail: #F43F5E;
   --status-warn: #F59E0B;
   --status-info: #38BDF8;
 
-  /* Typography tokens */
+  /* Typography */
   --text-primary: #F5F3EE;
   --text-secondary: #A29E94;
   --text-tertiary: #6B675E;
 
-  /* Font variables */
-  --font-sans: var(--font-space-grotesk), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-mono: var(--font-jetbrains-mono), "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  /* Fonts */
+  --font-sans: var(--font-bricolage), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), "JetBrains Mono", ui-monospace, monospace;
 }
 
-/* Light Theme Stage Tokens (Visual Regression) */
+/* Light theme stage (Visual regression) */
 .theme-light-stage {
-  --bg-canvas: #F5F3EE;
-  --bg-surface: #FFFFFF;
-  --bg-surface-elevated: #EDEAE1;
-  --bg-subtle: #E2DFD4;
-  --border-subtle: rgba(14, 13, 11, 0.08);
-  --border-strong: rgba(14, 13, 11, 0.16);
-  --text-primary: #0E0D0B;
-  --text-secondary: #58554C;
-  --text-tertiary: #848074;
+  --bg-canvas: #F1EFE8;
+  --bg-surface: #E8E5DD;
+  --bg-surface-2: #DEDAD0;
+  --border-subtle: rgba(20, 19, 15, 0.12);
+  --border-strong: rgba(20, 19, 15, 0.22);
+  --text-primary: #14130F;
+  --text-secondary: #5C584E;
+  --text-tertiary: #878275;
 }
 
 @layer base {
@@ -57,18 +56,46 @@
 
   body {
     background-color: #0E0D0B;
-    color: #ECEAE5;
+    color: #F5F3EE;
     font-family: var(--font-sans);
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
 
-  /* Space Grotesk heading tracking */
+  /* Tabular figures for telemetry & numerals */
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-sans);
-    letter-spacing: -0.035em;
+    letter-spacing: -0.03em;
+    font-weight: 700;
   }
+}
+
+/* Blueprint grid background */
+.blueprint-grid {
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+.blueprint-grid-dense {
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 16px 16px;
+}
+
+.blueprint-grid-light {
+  background-image: 
+    linear-gradient(to right, rgba(20, 19, 15, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(20, 19, 15, 0.04) 1px, transparent 1px);
+  background-size: 32px 32px;
 }
 
 ::selection {
@@ -96,6 +123,15 @@
   animation: passTick 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+@keyframes marquee {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
 /* Developer Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
@@ -115,15 +151,15 @@
   background: rgba(255, 255, 255, 0.22);
 }
 
-/* Restrained developer surface utilities */
+/* Precision instrument developer surface utilities */
 .surface-card {
-  background-color: #111319;
+  background-color: #161512;
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 8px;
+  border-radius: 6px;
 }
 
 .surface-card-subtle {
-  background-color: #0E1015;
+  background-color: #12110E;
   border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 6px;
 }
@@ -133,20 +169,21 @@
 }
 
 .surface-hover:hover {
-  background-color: #161922;
+  background-color: #1D1B17;
   border-color: rgba(255, 255, 255, 0.14);
 }
 
 /* Backward-compatible replacements for deprecated glass classes */
 .glass-panel {
-  background-color: #111319;
+  background-color: #161512;
   border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
 }
 
 .glass-panel-elevated {
-  background-color: #141720;
+  background-color: #1D1B17;
   border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: 0 12px 32px -4px rgba(0, 0, 0, 0.7);
+  border-radius: 6px;
 }
 
 .glass-card-hover {
@@ -155,7 +192,7 @@
 
 .glass-card-hover:hover {
   border-color: rgba(255, 255, 255, 0.16);
-  background-color: #151821;
+  background-color: #22201B;
 }
 
 /* High-density Data Table Utilities */
