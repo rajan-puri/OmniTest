@@ -3,8 +3,46 @@
 @tailwind utilities;
 
 :root {
-  --font-inter: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, monospace;
+  /* Warm off-black palette */
+  --bg-canvas: #0E0D0B;
+  --bg-surface: #161512;
+  --bg-surface-elevated: #1D1B17;
+  --bg-subtle: #24221C;
+
+  /* Borders */
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.16);
+
+  /* Single bold accent */
+  --accent-primary: #00E58F;
+  --accent-muted: rgba(0, 229, 143, 0.12);
+
+  /* Semantic tokens */
+  --status-fail: #F43F5E;
+  --status-warn: #F59E0B;
+  --status-info: #38BDF8;
+
+  /* Typography tokens */
+  --text-primary: #F5F3EE;
+  --text-secondary: #A29E94;
+  --text-tertiary: #6B675E;
+
+  /* Font variables */
+  --font-sans: var(--font-space-grotesk), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+/* Light Theme Stage Tokens (Visual Regression) */
+.theme-light-stage {
+  --bg-canvas: #F5F3EE;
+  --bg-surface: #FFFFFF;
+  --bg-surface-elevated: #EDEAE1;
+  --bg-subtle: #E2DFD4;
+  --border-subtle: rgba(14, 13, 11, 0.08);
+  --border-strong: rgba(14, 13, 11, 0.16);
+  --text-primary: #0E0D0B;
+  --text-secondary: #58554C;
+  --text-tertiary: #848074;
 }
 
 @layer base {
@@ -18,23 +56,44 @@
   }
 
   body {
-    background-color: #090A0F;
-    color: #ECEEF2;
-    font-family: var(--font-inter);
+    background-color: #0E0D0B;
+    color: #ECEAE5;
+    font-family: var(--font-sans);
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
-  /* Compact typography baseline */
+  /* Space Grotesk heading tracking */
   h1, h2, h3, h4, h5, h6 {
-    letter-spacing: -0.02em;
+    font-family: var(--font-sans);
+    letter-spacing: -0.035em;
   }
 }
 
 ::selection {
-  background-color: rgba(16, 185, 129, 0.25);
-  color: #FFFFFF;
+  background-color: rgba(0, 240, 144, 0.25);
+  color: #00F090;
+}
+
+/* 0.5s small tick animation for test status transitions */
+@keyframes passTick {
+  0% {
+    transform: scale(0.7);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.15);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-pass-tick {
+  animation: passTick 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 /* Developer Scrollbar */

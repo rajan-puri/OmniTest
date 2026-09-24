@@ -1,8 +1,21 @@
 import type { Metadata, Viewport } from "next";
+import { Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  variable: "--font-space-grotesk",
+  display: "swap",
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-jetbrains-mono",
+  display: "swap",
+});
+
 export const viewport: Viewport = {
-  themeColor: "#08090C",
+  themeColor: "#0E0D0B",
   width: "device-width",
   initialScale: 1,
   maximumScale: 5,
@@ -56,9 +69,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="dark scroll-smooth">
-      <body className="min-h-screen bg-background text-zinc-100 antialiased selection:bg-brand-500/20 selection:text-brand-400">
-        <div className="relative min-h-screen flex flex-col bg-radial-glow">
+    <html lang="en" className={`dark scroll-smooth ${spaceGrotesk.variable} ${jetbrainsMono.variable}`}>
+      <body className="min-h-screen bg-[#0E0D0B] text-[#ECEAE5] antialiased selection:bg-[#00F090]/20 selection:text-[#00F090]">
+        <div className="relative min-h-screen flex flex-col bg-[#0E0D0B]">
           {children}
         </div>
       </body>

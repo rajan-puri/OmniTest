@@ -1,65 +1,58 @@
 import React from "react";
-import { Navigation } from "@/components/navigation";
-import { Hero } from "@/components/hero";
-import { ProblemSection } from "@/components/problem-section";
-import { CapabilitiesSection } from "@/components/capabilities-section";
-import { HowItWorks } from "@/components/how-it-works";
-import { RecorderSection } from "@/components/recorder-section";
-import { VisualTestingSection } from "@/components/visual-testing-section";
-import { DeveloperWorkflow } from "@/components/developer-workflow";
-import { DashboardPreview } from "@/components/dashboard-preview";
-import { GithubCiSection } from "@/components/github-ci-section";
-import { PricingSection } from "@/components/pricing-section";
-import { FaqSection } from "@/components/faq-section";
-import { FinalCta } from "@/components/final-cta";
-import { Footer } from "@/components/footer";
+import { SmoothScrollProvider } from "@/components/landing/SmoothScrollProvider";
+import { LandingNav } from "@/components/landing/LandingNav";
+import { LiveTestRail } from "@/components/landing/LiveTestRail";
+import { HeroSection } from "@/components/landing/HeroSection";
+import { ProblemCollapseSection } from "@/components/landing/ProblemCollapseSection";
+import { ExecutionPipelineSection } from "@/components/landing/ExecutionPipelineSection";
+import { VisualRegressionStage } from "@/components/landing/VisualRegressionStage";
+import { CapabilitiesBento } from "@/components/landing/CapabilitiesBento";
+import { WorkflowCiSection } from "@/components/landing/WorkflowCiSection";
+import { DashboardMockupSection } from "@/components/landing/DashboardMockupSection";
+import { PricingMatrix } from "@/components/landing/PricingMatrix";
+import { FaqAccordion } from "@/components/landing/FaqAccordion";
+import { AssertionCtaFooter } from "@/components/landing/AssertionCtaFooter";
 
 export default function HomePage() {
   return (
-    <>
-      {/* 1. Navigation */}
-      <Navigation />
+    <SmoothScrollProvider>
+      {/* Live Test Rail (Mobile Top Bar / Desktop Side Telemetry Rail) */}
+      <LiveTestRail />
+
+      {/* Developer Navigation */}
+      <LandingNav />
 
       <main className="flex-1">
-        {/* 2. Hero */}
-        <Hero />
+        {/* Step 01: Hero & Animated Selector Sandbox */}
+        <HeroSection />
 
-        {/* 3. Problem */}
-        <ProblemSection />
+        {/* Step 02: Tool Convergence (Before / After Sprawl Collapse) */}
+        <ProblemCollapseSection />
 
-        {/* 4. Testing capabilities */}
-        <CapabilitiesSection />
+        {/* Step 03: Parallel Execution Waterfall Pipeline */}
+        <ExecutionPipelineSection />
 
-        {/* 5. How OmniTest works */}
-        <HowItWorks />
+        {/* Step 04: Visual Regression Studio (Light-Theme Stage) */}
+        <VisualRegressionStage />
 
-        {/* 6. Test recorder */}
-        <RecorderSection />
+        {/* Step 05: Multi-Discipline Quality Fleet (Asymmetric Bento) */}
+        <CapabilitiesBento />
 
-        {/* 7. Visual testing */}
-        <VisualTestingSection />
+        {/* Step 06: Developer Workflow & PR Gate */}
+        <WorkflowCiSection />
 
-        {/* 8. Developer workflow */}
-        <DeveloperWorkflow />
+        {/* Step 07: Observability Dashboard Console */}
+        <DashboardMockupSection />
 
-        {/* 9. Dashboard preview */}
-        <DashboardPreview />
+        {/* Step 08: Predictable Pricing Matrix */}
+        <PricingMatrix />
 
-        {/* 10. GitHub/CI integration */}
-        <GithubCiSection />
+        {/* Section 09: Technical FAQ */}
+        <FaqAccordion />
 
-        {/* 11. Pricing preview */}
-        <PricingSection />
-
-        {/* 12. FAQ */}
-        <FaqSection />
-
-        {/* 13. Final CTA */}
-        <FinalCta />
+        {/* Step 10: Final Assertion & Developer Footer */}
+        <AssertionCtaFooter />
       </main>
-
-      {/* 14. Footer */}
-      <Footer />
-    </>
+    </SmoothScrollProvider>
   );
 }
